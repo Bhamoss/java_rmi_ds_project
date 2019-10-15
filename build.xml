@@ -32,7 +32,7 @@
 	<property name="remote.password" value="PK4Z9G2EHF" />  <!-- Remote server: password -->
 
 	<property name="remote.startRegistry" value="false" />  <!-- Remote server: start RMI registry or not -->
-	<property name="remote.registryPort" value="0" />  <!-- Remote server: on which port to start RMI registry -->
+	<property name="remote.registryPort" value="10926" />  <!-- Remote server: on which port to start RMI registry -->
 
 	<!--
     ********************************************************

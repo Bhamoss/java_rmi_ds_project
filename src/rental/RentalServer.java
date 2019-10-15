@@ -17,8 +17,8 @@ public class RentalServer {
 	
 	private final static int LOCAL = 0;
 	private final static int REMOTE = 1;
-	public final static int RMI_PORT = 10926; //TODO: set accordingly we have 10926-10930
-	private final static int STUB_PORT = 10927; //TODO: set accordingly
+	public final static int RMI_PORT = 10926; //10926-10930
+	private final static int STUB_PORT = 10927; 
 
 	public static void main(String[] args) throws ReservationException,
 			NumberFormatException, IOException {
@@ -41,7 +41,6 @@ public class RentalServer {
 			
 			
 			// make our local object available THROUGH its remote interface
-			// TODO: wat is die 0? de poort waar het object wordt available gemaakt maar wat is dat?
 			server_side_stub = (ICarRentalCompany) UnicastRemoteObject.exportObject(server_side_crc, 0);
 			
 			// we zoeken naar onze registry, wat op de locale pc zit in dit geval
@@ -59,7 +58,7 @@ public class RentalServer {
 			server_side_stub = (ICarRentalCompany) UnicastRemoteObject.exportObject(server_side_crc, STUB_PORT);
 			
 			
-			registry = LocateRegistry.createRegistry(RMI_PORT);;
+			registry = LocateRegistry.createRegistry(RMI_PORT);
 			
 			// we make our stub available in the registry
 			registry.rebind("crc", server_side_stub);
