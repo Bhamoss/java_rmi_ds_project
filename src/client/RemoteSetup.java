@@ -26,6 +26,8 @@ public class RemoteSetup {
 		String jar = (args.length > 5) ? args[5] : "rmi1_server.jar"; // name of the JAR file that contains the server
 																		// code
 
+		//System.out.println("This prints some output because I need to find where the nullptr exception comes from in here.");
+
 		HttpURLConnection connection = null;
 		InputStream inputStream = null;
 		try {
@@ -41,9 +43,22 @@ public class RemoteSetup {
 			connection.setRequestProperty("X-Registry-Start", startRegistry.toString());
 			connection.setRequestProperty("X-Registry-Port", Integer.toString(registryPort));
 
+			//System.out.println("Properties set");
+
+			
 			FileInputStream fin = new FileInputStream(jar);
+			//System.out.println("Created inputstream to read in jar");
+		
+
+			// getting a connection timed out after 2 minutes
+			//connection.getOutputStream();
+			//System.out.println("Got output stream");
+
 			copy(fin, connection.getOutputStream());
+			//System.out.println("JAR transferred");
 			fin.close();
+
+			
 
 			inputStream = connection.getInputStream();
 			BufferedReader rd = new BufferedReader(new InputStreamReader(inputStream));
@@ -52,6 +67,8 @@ public class RemoteSetup {
 				System.out.println("[REMOTE SERVER] " + line);
 			}
 			rd.close();
+
+			//System.out.println("Response received");
 		} finally {
 			inputStream.close();
 			connection.disconnect();
@@ -60,7 +77,7 @@ public class RemoteSetup {
 
 	// https://stamm-wilbrandt.de/en/blog/Post.java
 	// copy method from From E.R. Harold's book "Java I/O"
-	public static void copy(InputStream in, OutputStream out) throws IOException {
+	public static void copy(FileInputStream in, OutputStream out) throws IOException {
 		// do not allow other threads to read from the
 		// input or write to the output while copying is
 		// taking place

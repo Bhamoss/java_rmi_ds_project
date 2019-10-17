@@ -21,6 +21,7 @@ public class Client extends AbstractTestBooking {
 
 	private final static int LOCAL = 0;
 	private final static int REMOTE = 1;
+	public final static int RMI_PORT = 10926; //10926-10930
 
 	/**
 	 * The `main` method is used to launch the client application and run the test
@@ -50,7 +51,7 @@ public class Client extends AbstractTestBooking {
 		}
 		else
 		{
-			registry = LocateRegistry.getRegistry("192.168.104.76", rental.RentalServer.RMI_PORT);
+			registry = LocateRegistry.getRegistry("192.168.104.76", Client.RMI_PORT);
 			client_side_crc_stub = (ICarRentalCompany) registry.lookup("crc");
 		}
 		

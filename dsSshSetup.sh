@@ -16,12 +16,12 @@ ENDPOINT="192.168.104.76"
 STUDENTNR=""
 HOST="couvin"
 
-SSHCOMMAND="ssh -A -t -i ${SSHKEY} -L 8080:localhost:18080 "
+SSHCOMMAND="ssh -A -t -i ${SSHKEY} -L 8080:localhost:8080 "
 for PORT in $(seq ${PORTSTART} ${PORTEND})
 do
     SSHCOMMAND+="-L ${PORT}:localhost:${PORT} "
 done
-SSHCOMMAND+="${STUDENTNR}@st.cs.kuleuven.be ssh -L 18080:${ENDPOINT}:80 "
+SSHCOMMAND+="${STUDENTNR}@st.cs.kuleuven.be ssh -L 8080:${ENDPOINT}:80 "
 for PORT in $(seq ${PORTSTART} ${PORTEND})
 do
     SSHCOMMAND+="-L ${PORT}:${ENDPOINT}:${PORT} "
