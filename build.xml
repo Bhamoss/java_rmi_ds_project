@@ -27,7 +27,7 @@
 	   using the remote setup to test your application.	   
     ************************************************************* -->
 	
-	<property name="remote.endpoint" value="192.168.104.76" />  <!-- Remote server: endpoint IP -->
+	<property name="remote.endpoint" value="192.168.104.76:8080" />  <!-- Remote server: endpoint IP -->
 	<property name="remote.username" value="rmi186" />  <!-- Remote server: username -->
 	<property name="remote.password" value="PK4Z9G2EHF" />  <!-- Remote server: password -->
 
