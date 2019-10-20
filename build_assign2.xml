@@ -27,12 +27,12 @@
 	   using the remote setup to test your application.	   
     ************************************************************* -->
 	
-	<property name="remote.endpoint" value="ENDPOINT_IP" />  <!-- Remote server: endpoint IP -->
-	<property name="remote.username" value="USERNAME" />  <!-- Remote server: username -->
-	<property name="remote.password" value="PASSWORD" />  <!-- Remote server: password -->
+	<property name="remote.endpoint" value="192.168.104.76:8080" />  <!-- Remote server: endpoint IP -->
+	<property name="remote.username" value="rmi186" />  <!-- Remote server: username -->
+	<property name="remote.password" value="PK4Z9G2EHF" />  <!-- Remote server: password -->
 
 	<property name="remote.startRegistry" value="false" />  <!-- Remote server: start RMI registry or not -->
-	<property name="remote.registryPort" value="0" />  <!-- Remote server: on which port to start RMI registry -->
+	<property name="remote.registryPort" value="10926" />  <!-- Remote server: on which port to start RMI registry -->
 
 	<!--
     ********************************************************
