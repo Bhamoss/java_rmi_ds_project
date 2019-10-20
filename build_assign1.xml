@@ -1,0 +1,161 @@
+<project name="RMI1" default="run.local" basedir=".">
+	<description>This is the build/run script for the RMI1 assignment. </description>
+
+	<!--
+    *************************************************************
+       Please set the following parameters to point 
+	   to your server and client packages and their
+	   respective Main-method classes.
+	   _Example_: server is launched from "rental.RentalServer"
+	            => server.package:   rental 
+	               server.mainClass: RentalServer
+	   
+	   The last parameter is the filename for the final zip.
+	   Set this to `rmi1.firstname.lastname`.
+    ************************************************************* -->
+	
+	<property name="client.package" value="client" />  <!-- Client package --> 
+	<property name="client.mainClass" value="Client" />  <!-- Main class of client package (contains client `main` method) -->
+	<property name="server.package" value="rental" />  <!-- Server package --> 
+	<property name="server.mainClass" value="RentalServer" />  <!-- Main class of server package (contains client `main` method) -->
+	
+	<property name="zip.filename" value="rmi1.Thomas.Bamelis" />  <!-- Name of zip file -->
+
+	<!--
+    *************************************************************
+       Please set the following parameters for correctly 
+	   using the remote setup to test your application.	   
+    ************************************************************* -->
+	
+	<property name="remote.endpoint" value="192.168.104.76:8080" />  <!-- Remote server: endpoint IP -->
+	<property name="remote.username" value="rmi186" />  <!-- Remote server: username -->
+	<property name="remote.password" value="PK4Z9G2EHF" />  <!-- Remote server: password -->
+
+	<property name="remote.startRegistry" value="false" />  <!-- Remote server: start RMI registry or not -->
+	<property name="remote.registryPort" value="10926" />  <!-- Remote server: on which port to start RMI registry -->
+
+	<!--
+    ********************************************************
+       Change parameters in this block if you move
+       files or use non-default settings.
+       (usually not required)
+	******************************************************** -->
+
+	<property name="local.registryPort" value="1099" />  <!-- Port to be used for `rmiregistry` started through Ant -->
+	<property name="remote.setupClass" value="client.RemoteSetup" />
+
+	<property name="csvFolder" value="." /> <!-- Folder that contains the `hertz.csv` file -->
+	<property name="testFolder" value="." /> <!-- Folder that contains the `simpleTrips` file -->
+
+	<!--
+    ********************************************************
+       Please DO NOT CHANGE any code below this line.
+	******************************************************** -->
+
+	<property name="src" location="src" />
+	<property name="build" location="bin" />
+
+	<path id="cp"> <!-- Classpath -->
+		<pathelement location="${build}" />
+		<pathelement location="${csvFolder}" />
+		<pathelement location="${testFolder}" />
+	</path>
+
+	<target name="init">
+		<delete dir="${build}" quiet="true" />
+		<mkdir dir="${build}" />
+		<delete dir="${dist}" quiet="true" />
+		<mkdir dir="${build}" />
+	</target>
+
+	<target name="compile" depends="init">
+		<javac includeantruntime="false" srcdir="${src}" destdir="${build}" />
+	</target>
+
+	<target name="registry.start">
+		<exec spawn="true" executable="rmiregistry" dir="${build}">
+			<arg value="${local.registryPort}" />
+		</exec>
+		<sleep milliseconds="500" />
+	</target>
+
+	<target name="registry.stop">
+		<exec osfamily="windows" executable="taskkill">
+			<arg value="/IM" />
+			<arg value="rmiregistry.exe" />
+			<arg value="/F" />
+		</exec>
+		<exec osfamily="unix" executable="killall">
+			<arg value="rmiregistry" />
+		</exec>
+	</target>
+
+	<target name="run.local.server">
+		<java fork="true" classname="${server.package}.${server.mainClass}">
+			<classpath refid="cp" />
+			<arg value="LOCAL" />
+		</java>
+	</target>
+
+	<target name="run.local.client">
+		<java classname="${client.package}.${client.mainClass}">
+			<classpath refid="cp" />
+			<arg value="LOCAL" />
+		</java>
+	</target>
+
+	<target name="run.local.both">
+		<java classname="${server.package}.${server.mainClass}">
+			<classpath refid="cp" />
+			<arg value="LOCAL" />
+		</java>
+		<java classname="${client.package}.${client.mainClass}">
+			<classpath refid="cp" />
+			<arg value="LOCAL" />
+		</java>
+	</target>
+
+	<target name="run.local" depends="compile,registry.start,run.local.both,registry.stop" />
+	<target name="run.local.wo-compile" depends="registry.start,run.local.both,registry.stop" />
+	<target name="run.local.wo-registry" depends="compile,run.local.both" />
+	<target name="run.local.wo-compile-registry" depends="run.local.both" />
+
+	<target name="remote.createjar" depends="compile">
+		<jar destfile="rmi1_server.jar" basedir="bin" excludes="${client.package}/**,RemoteSetup**">
+			<fileset file="*.csv" />
+			<manifest>
+				<attribute name="Main-Class" value="${server.package}.${server.mainClass}" />
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="run.remote.server" depends="remote.createjar">
+		<java fork="true" classname="${remote.setupClass}">
+			<classpath refid="cp" />
+			<arg value="${remote.endpoint}" />
+			<arg value="${remote.username}" />
+			<arg value="${remote.password}" />
+			<arg value="${remote.startRegistry}" />
+			<arg value="${remote.registryPort}" />
+		</java>
+	</target>
+
+	<target name="run.remote.client" depends="compile">
+		<java classname="${client.package}.${client.mainClass}">
+			<classpath refid="cp" />
+			<arg value="REMOTE" />
+		</java>
+	</target>
+
+	<target name="zip">
+		<delete file="${zip.filename}.zip" quiet="true" />
+		<zip destfile="${zip.filename}.zip" update="false">
+			<zipfileset dir=".">
+				<include name="*rips" />
+				<include name="*csv" />
+				<include name="build.xml" />
+			</zipfileset>
+			<zipfileset dir="src" prefix="src"/>
+		</zip>
+	</target>
+</project>
