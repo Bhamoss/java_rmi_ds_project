@@ -1,0 +1,32 @@
+@startuml
+title design
+
+class Car {
+
+}
+
+class Reservation {
+
+}
+
+class Quote {
+}
+
+
+class CarType {
+    df
+}
+
+class ReservationException {
+}
+
+class CarRentalCompany {
+}
+
+interface ICarRentalCompany {
+}
+
+class ReservationConstraints {
+}
+
+@enduml
