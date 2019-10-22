@@ -1,5 +1,14 @@
 @startuml
-title "Car renter wants to reserve cars at two car rental companies: A and B"
+title Car renter wants to reserve cars at two car rental companies: A and B
+
+Client->???: checkForAvailableCarTypes() voor company A
+
+Client->ReservationSession:createQuote
+
+Client->???: checkForAvailableCarTypes() voor company B
+
+Client->ReservationSession:createQuote
+
 
 
 @enduml
