@@ -1,0 +1,75 @@
+@startuml
+title Design
+
+class ReservationSession {
+    state: List<Quotes>
+    createQuote()
+    getCurrentQuotes()
+    confirmQuotes()
+    getAvailableCarTypes()
+    getCheapestCarType()
+}
+ReservationSession --|> Session
+class Session {
+}
+
+
+class ManagerSession {
+    registerCRC()
+    unregisterCRC()
+    getCRCs()
+    getCRCCarTypes(crc)
+    getNbReservations(type: CarType)
+    getBestCustomer()
+    getNbReservationsRenter(renter)
+    getMostPopularCRC(date: Date)
+}
+ManagerSession --|> Session
+
+class CarRentalAgency {
+    NameService : Map<String, ICarRentalCompany>
+}
+CarRentalAgency -->"*" ICarRentalCompany
+CarRentalAgency ..|> ICarRentalAgency : stub
+
+interface ICarRentalAgency {
+}
+
+class Car {
+
+}
+Car -->"*" Reservation
+Car -->"1" CarType
+
+class Reservation {
+
+}
+Reservation --|> Quote
+
+class Quote {
+}
+
+
+class CarType {
+    df
+}
+
+'class ReservationException {
+'}
+
+class CarRentalCompany {
+}
+CarRentalCompany ..|> ICarRentalCompany : stub
+CarRentalCompany -->"*" Car
+CarRentalCompany -->"*" CarType
+interface ICarRentalCompany {
+}
+
+'class ReservationConstraints {
+'}
+
+class Client {
+}
+Client -->"1" ICarRentalAgency
+
+@enduml
