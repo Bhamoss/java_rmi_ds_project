@@ -1,17 +1,28 @@
 @startuml
 title Design
 
+package centralPoint{
+
+class Session 
+Session -->"1" CarRentalAgency
+
 class ReservationSession {
-    state: List<Quotes>
+    state : List<Quotes>
+    __
     createQuote()
     getCurrentQuotes()
     confirmQuotes()
     getAvailableCarTypes()
     getCheapestCarType()
+    __
+    Remote
 }
 ReservationSession --|> Session
-class Session {
-}
+ReservationSession ..|> IReservationSession : stub
+interface IReservationSession
+
+
+
 
 
 class ManagerSession {
@@ -23,17 +34,30 @@ class ManagerSession {
     getBestCustomer()
     getNbReservationsRenter(renter)
     getMostPopularCRC(date: Date)
+    __
+    Remote
 }
 ManagerSession --|> Session
+ManagerSession ..|> IManagerSession : stub
+interface IManagerSession
 
 class CarRentalAgency {
     NameService : Map<String, ICarRentalCompany>
+    __
+    Remote
 }
-CarRentalAgency -->"*" ICarRentalCompany
+
 CarRentalAgency ..|> ICarRentalAgency : stub
 
 interface ICarRentalAgency {
 }
+
+}
+
+package specific_car_rental_COMPANY_server {
+
+interface ICarRentalCompany 
+CarRentalAgency -->"*" ICarRentalCompany
 
 class Car {
 
@@ -58,18 +82,39 @@ class CarType {
 '}
 
 class CarRentalCompany {
+    __
+    Remote
 }
 CarRentalCompany ..|> ICarRentalCompany : stub
 CarRentalCompany -->"*" Car
 CarRentalCompany -->"*" CarType
-interface ICarRentalCompany {
-}
+
+
 
 'class ReservationConstraints {
 '}
-
+}
+package clientside{
 class Client {
+    cra : CarRentalAgency
+
+    Client(cra : CarRentalAgency) : Client {Constructor, vraagt session}
+    getNewReservationSession(String name) : ReservationSession
+    getNewManagerSession(String name, String carRentalName) : ManagerSession
+    checkForAvailableCarTypes(ReservationSession session, Date start, Date end)
+
 }
 Client -->"1" ICarRentalAgency
+Client ..> IReservationSession : uses
+Client ..> IManagerSession : uses
+}
+
+
+interface Remote
+ICarRentalAgency --|> Remote
+ICarRentalCompany --|> Remote
+IManagerSession --|> Remote
+IReservationSession --|> Remote
+
 
 @enduml

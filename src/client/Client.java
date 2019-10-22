@@ -72,6 +72,7 @@ public class Client extends AbstractTestBooking {
 	public Client(String scriptFile, String carRentalCompanyName, int localOrRemote, ICarRentalCompany icrc) {
 		super(scriptFile);
 		setCrc_stub(icrc);
+		// ask CRA for session and set it, fuk dat crc
 	}
 	
 	// The car rental company interface stub
