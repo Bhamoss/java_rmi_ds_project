@@ -1,0 +1,5 @@
+@startuml
+title "Car renter wants to reserve cars at two car rental companies: A and B"
+
+
+@enduml
