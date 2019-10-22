@@ -4,10 +4,13 @@ title design
 class Car {
 
 }
+Car -->"*" Reservation
+Car -->"1" CarType
 
 class Reservation {
 
 }
+Reservation --|> Quote
 
 class Quote {
 }
@@ -22,11 +25,17 @@ class ReservationException {
 
 class CarRentalCompany {
 }
-
+CarRentalCompany ..|> ICarRentalCompany
+CarRentalCompany -->"*" Car
+CarRentalCompany -->"*" CarType
 interface ICarRentalCompany {
 }
 
 class ReservationConstraints {
 }
+
+class Client {
+}
+Client -->"1" ICarRentalCompany
 
 @enduml
