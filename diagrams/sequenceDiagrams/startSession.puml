@@ -1,5 +1,14 @@
 @startuml
-title "Car renter starts a new session"
+title Car renter starts a new reservation session
+
+Client->CarRentalAgency: getNewReservationSession()
+activate Client
+activate CarRentalAgency
+
+CarRentalAgency->ReservationSession: createNewReservationSession()
+activate ReservationSession
+ReservationSession-->CarRentalAgency: reservation session
+CarRentalAgency-->Client: reservation session
 
 
 @enduml
