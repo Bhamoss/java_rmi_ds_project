@@ -1,0 +1,14 @@
+@startuml
+title Car rental company registers
+
+CarRentalCompany_on_remote_server->RMI_registry_on_CRA_server: bind(binding_port, naming_string)
+
+
+
+IManagerSession_on_remote_server->CarRentalAgency_on_CRA_server: register(naming_string)
+
+
+
+
+
+@enduml

@@ -1,12 +1,60 @@
 @startuml
 title Design
 
+
+package clientside{
+class Client {
+    cra : CarRentalAgency
+
+    Client(cra : CarRentalAgency) : Client {Constructor, vraagt session}
+    getNewReservationSession(String name) : ReservationSession
+    getNewManagerSession(String name, String carRentalName) : ManagerSession
+    checkForAvailableCarTypes(ReservationSession session, Date start, Date end)
+
+}
+Client -->"1" ICarRentalAgency
+Client ..> ReservationSession : uses
+Client ..> ManagerSession : uses
+
+
+interface ManagerSession {
+    registerCRC()
+    unregisterCRC()
+    getCRCs()
+    getCRCCarTypes(crc)
+    getNbReservations(type: CarType)
+    getBestCustomer()
+    getNbReservationsRenter(renter)
+    getMostPopularCRC(date: Date)
+}
+interface ReservationSession {
+    createQuote()
+    getCurrentQuotes()
+    confirmQuotes()
+    getAvailableCarTypes()
+    getCheapestCarType()
+}
+interface ICarRentalAgency {
+    getNewReservationSession(String name) : ReservationSession
+    getNewManagerSession(String name, String carRentalName) : ManagerSession
+}
+}
+
+
 package centralPoint{
+
+interface ICarRentalCompany {
+    Set<CarType> getAvailableCarTypes(Date start, Date end)
+    Quote createQuote(ReservationConstraints constraints, String client)
+    Reservation confirmQuote(Quote quote)
+    List<Reservation> getReservationsByRenter(String clientName)
+    int getNumberOfReservationsForCarType(String carType)
+}
 
 class Session 
 Session -->"1" CarRentalAgency
 
-class ReservationSession {
+class ReservationSessionBean {
     state : List<Quotes>
     __
     createQuote()
@@ -17,15 +65,15 @@ class ReservationSession {
     __
     Remote
 }
-ReservationSession --|> Session
-ReservationSession ..|> IReservationSession : stub
-interface IReservationSession
+ReservationSessionBean --|> Session
+ReservationSessionBean ..|> ReservationSession : stub
+interface ReservationSession
 
 
 
 
 
-class ManagerSession {
+class ManagerSessionBean {
     registerCRC()
     unregisterCRC()
     getCRCs()
@@ -37,9 +85,9 @@ class ManagerSession {
     __
     Remote
 }
-ManagerSession --|> Session
-ManagerSession ..|> IManagerSession : stub
-interface IManagerSession
+ManagerSessionBean --|> Session
+ManagerSessionBean ..|> ManagerSession : stub
+
 
 class CarRentalAgency {
     NameService : Map<String, ICarRentalCompany>
@@ -56,32 +104,102 @@ interface ICarRentalAgency {
 
 package specific_car_rental_COMPANY_server {
 
-interface ICarRentalCompany 
+ 
 CarRentalAgency -->"*" ICarRentalCompany
 
 class Car {
-
+    private int id
+    private CarType type
+    private List<Reservation> reservations
+    __
+    Car(int uid, CarType type)
+    getId() : int
+    getType() : int
+    Iterator<Reservation> getReservations()
+    boolean isAvailable(Date start, Date end)
+    void addReservation(Reservation res)
+    void removeReservation(Reservation reservation)
 }
 Car -->"*" Reservation
 Car -->"1" CarType
 
 class Reservation {
-
+    carId : int
+    __
+    Reservation(Quote quote, int carId)
+    int getCarId()
+    String toString()
+    String clientInfo()
+    int hashCode()
+    boolean equals(Object obj)
+    __
+    Serializable
 }
 Reservation --|> Quote
 
 class Quote {
+    startDate : Date
+    endDate : Date
+    carRenter : String
+    rentalCompany : String
+    carType : String
+    rentalPrice : double
+    __
+    getters()
+    Quote(String carRenter, Date start, Date end, String rentalCompany, String carType, double rentalPrice)
+    toString() : String
+    hashCode() : int
+    equals(obj : Object) : boolean
+    __
+    Serializable
 }
 
 
 class CarType {
-    df
+    private String name
+    private int nbOfSeats
+    private boolean smokingAllowed
+    private double rentalPricePerDay
+    private float trunkSpace
+    __
+    CarType(String name, int nbOfSeats, float trunkSpace, double rentalPricePerDay, boolean smokingAllowed)
+    String getName()
+    int getNbOfSeats()
+    boolean isSmokingAllowed()
+    double getRentalPricePerDay()
+    float getTrunkSpace()
+    String toString()
+    int hashCode()
+    boolean equals(Object obj)
+    __
+    Serializable
 }
 
-'class ReservationException {
-'}
+class ReservationException {
+    public ReservationException(String string)
+    __
+    Serializable
+}
 
 class CarRentalCompany {
+    private List<String> regions
+	private String name
+	private List<Car> cars
+	private Map<String,CarType> carTypes = new HashMap<String, CarType>()
+    __
+    CarRentalCompany(String name, List<String> regions, List<Car> cars)
+    getters()
+    setters()
+    boolean operatesInRegion(String region)
+    Collection<CarType> getAllCarTypes()
+    CarType getCarType(String carTypeName)
+    boolean isAvailable(String carTypeName, Date start, Date end)
+    Set<CarType> getAvailableCarTypes(Date start, Date end)
+    int getNumberOfReservationsForCarType(String carType)
+    List<Reservation> getReservationsByRenter(String clientName)
+    Quote createQuote(ReservationConstraints constraints, String client)
+    Reservation confirmQuote(Quote quote)
+    void cancelReservation(Reservation res)
     __
     Remote
 }
@@ -91,30 +209,30 @@ CarRentalCompany -->"*" CarType
 
 
 
-'class ReservationConstraints {
-'}
+class ReservationConstraints {
+    private Date startDate
+    private Date endDate
+    private String carType
+    private String region
+    __
+    ReservationConstraints(Date start, Date end, String carType, String region)
+    getters()
+    setters()
+    int hashCode()
+    boolean equals(Object obj)
+    String toString()
+    __
+    Serializable
 }
-package clientside{
-class Client {
-    cra : CarRentalAgency
+}
 
-    Client(cra : CarRentalAgency) : Client {Constructor, vraagt session}
-    getNewReservationSession(String name) : ReservationSession
-    getNewManagerSession(String name, String carRentalName) : ManagerSession
-    checkForAvailableCarTypes(ReservationSession session, Date start, Date end)
-
-}
-Client -->"1" ICarRentalAgency
-Client ..> IReservationSession : uses
-Client ..> IManagerSession : uses
-}
 
 
 interface Remote
 ICarRentalAgency --|> Remote
 ICarRentalCompany --|> Remote
-IManagerSession --|> Remote
-IReservationSession --|> Remote
+ManagerSession --|> Remote
+ReservationSession --|> Remote
 
 
 @enduml
