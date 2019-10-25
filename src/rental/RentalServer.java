@@ -25,6 +25,12 @@ public class RentalServer {
 		// The first argument passed to the `main` method (if present)
 		// indicates whether the application is run on the remote setup or not.
 		int localOrRemote = (args.length == 1 && args[0].equals("REMOTE")) ? REMOTE : LOCAL;
+			
+		//TODO: // create a cra and its stub
+		//TODO: read in the other csv and push it also to the cra registry
+		//TODO: Then create a master session to register them on the cra
+		
+
 
 		CrcData data  = loadData("hertz.csv");
 		CarRentalCompany server_side_crc = new CarRentalCompany(data.name, data.regions, data.cars);

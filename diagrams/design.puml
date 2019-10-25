@@ -9,7 +9,20 @@ class Client {
     Client(cra : CarRentalAgency) : Client {Constructor, vraagt session}
     getNewReservationSession(String name) : ReservationSession
     getNewManagerSession(String name, String carRentalName) : ManagerSession
+    
     checkForAvailableCarTypes(ReservationSession session, Date start, Date end)
+    addQuoteToSession(ReservationSession session, String name, Date start, Date end, String carType, String region) : void
+    confirmQuotes(ReservationSession session, String name) : List<Reservation>
+
+
+    registerCrc(name : String)
+    unregisterCrc(name : String)
+
+    getNumberOfReservationsForCarType(ManagerSession ms, String carRentalName, String carType) : int
+    getNumberOfReservationsByRenter(ManagerSession ms, String clientName) : int
+    getBestClients(ManagerSession ms) : Set<String> 
+    getCheapestCarType(ReservationSession session, Date start, Date end, String region) : String 
+    getMostPopularCarTypeIn(ManagerSession ms, String carRentalCompanyName, int year) : CarType 
 
 }
 Client -->"1" ICarRentalAgency
@@ -23,16 +36,16 @@ interface ManagerSession {
     getCRCs()
     getCRCCarTypes(crc)
     getNbReservations(type: CarType)
-    getBestCustomer()
+    getBestClients()
     getNbReservationsRenter(renter)
-    getMostPopularCRC(date: Date)
+    getMostPopularCarTypeIn(String carRentalCompanyName, int year) : CarType
 }
 interface ReservationSession {
-    createQuote()
-    getCurrentQuotes()
+    createQuote(ReservationConstraints constraints, String client) : Quote
+    getCurrentQuotes() : Collection<Quote>
     confirmQuotes()
-    getAvailableCarTypes()
-    getCheapestCarType()
+    checkForAvailableCarTypes(Date start, Date end) {prints to output}
+    getCheapestCarType(Date start, Date end, String region) : String
 }
 interface ICarRentalAgency {
     getNewReservationSession(String name) : ReservationSession
@@ -51,7 +64,12 @@ interface ICarRentalCompany {
     int getNumberOfReservationsForCarType(String carType)
 }
 
-class Session 
+class Session {
+    private final CarRentalAgency cra;
+    __
+    Session(CarRentalAgency cra)
+    CarRentalAgency getCra()
+}
 Session -->"1" CarRentalAgency
 
 class ReservationSessionBean {

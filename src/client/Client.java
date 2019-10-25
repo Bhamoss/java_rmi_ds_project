@@ -11,10 +11,12 @@ import rental.Quote;
 import rental.Reservation;
 import rental.ReservationConstraints;
 import rental.ReservationException;
+import rental.ReservationSession;
 import rental.CarType;
 import rental.ICarRentalCompany;
+import rental.ManagerSession;
 
-public class Client extends AbstractTestBooking {
+public class Client extends AbstractTestManagement<ReservationSession, ManagerSession>  {
 
 	/********
 	 * MAIN *
@@ -33,7 +35,7 @@ public class Client extends AbstractTestBooking {
 		// indicates whether the application is run on the remote setup or not.
 		int localOrRemote = (args.length == 1 && args[0].equals("REMOTE")) ? REMOTE : LOCAL;
 
-		String carRentalCompanyName = "Hertz";
+		String agencyName = "Hertz";
 
 		System.setSecurityManager(null);
 		//TODO: change to carRentalAgency
@@ -45,14 +47,14 @@ public class Client extends AbstractTestBooking {
 
 		if (localOrRemote == LOCAL) {
 			registry = LocateRegistry.getRegistry("127.0.0.1", 1099);
-			client_side_crc_stub = (ICarRentalCompany) registry.lookup("crc");
+			client_side_crc_stub = (ICarRentalCompany) registry.lookup(agencyName);
 		} else {
 			registry = LocateRegistry.getRegistry("192.168.104.76", Client.RMI_PORT);
-			client_side_crc_stub = (ICarRentalCompany) registry.lookup("crc");
+			client_side_crc_stub = (ICarRentalCompany) registry.lookup(agencyName);
 		}
 
 		// An example reservation scenario on car rental company 'Hertz' would be...
-		Client client = new Client("simpleTrips", carRentalCompanyName, localOrRemote, client_side_crc_stub);
+		Client client = new Client("simpleTrips", agencyName, localOrRemote, client_side_crc_stub);
 
 		// starting here we can use the stub, when we have implemented everything ok
 		// I suggest adding a crc field to the client holding a stub so we can use the
