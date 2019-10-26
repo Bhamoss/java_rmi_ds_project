@@ -2,12 +2,11 @@ package rental;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 public interface ReservationSession extends Remote{
-    public Quote createQuote() throws RemoteException;
-    public Collection<Quote> getCurrentQuotes() throws RemoteException;
-    public void confirmQuotes() throws RemoteException;
-    public Collection<CarType> getAvailableCarTypes() throws RemoteException;
-    public CarType getCheapestCarType() throws RemoteException;
+    public void checkForAvailableCarTypes(ReservationSession session, Date start, Date end) throws RemoteException;
+    public void addQuoteToSession(ReservationSession session, String name, Date start, Date end, String carType, String region);
+    public List<Reservation> confirmQuotes(ReservationSession session, String name);
 }
