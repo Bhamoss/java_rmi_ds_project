@@ -11,23 +11,35 @@ activate Client
 activate ReservationSession
 activate CarRentalAgency
 
+== check availability of a car type at CRC A ==
 ' cartype at company A
 Client->ReservationSession: checkForAvailableCarTypesAtCRC(crcA, ...)
     note left : hoe checken voor specifieke \n company A? \n extra method voorzien die ook \n met company rekening houdt? \n Hier uitgewerkt met extra method
 ReservationSession->CarRentalAgency : getAvailableCarTypesAtCRC(crcA, ...) 
 
 CarRentalAgency->CarRentalCompanyA : getAvailableCarTypes(...)
+activate CarRentalCompanyA
+CarRentalCompanyA-->ReservationSession : set of available cartypes
+deactivate CarRentalCompanyA
+ReservationSession-->Client : print set of available cartypes
 
+== create quote for a car type at CRC A ==
 Client->ReservationSession:createQuote 
 note left  : hier idem hoe specifiek voor \n company A?
 
+== check availability of a car type at CRC B ==
 ' cartype at company B
 Client->ReservationSession: checkForAvailableCarTypesAtCRC(crcB, ...)
 
 ReservationSession->CarRentalAgency : getAvailableCarTypesAtCRC(crcB, ...) 
 
 CarRentalAgency->CarRentalCompanyB : getAvailableCarTypes(...)
+activate CarRentalCompanyB
+CarRentalCompanyB-->ReservationSession : set of available cartypes
+deactivate CarRentalCompanyB
+ReservationSession-->Client : print set of available cartypes
 
+== create quote for a car type at CRC B ==
 Client->ReservationSession:createQuote
 note left  : hier idem hoe specifiek voor \n company B?
 
