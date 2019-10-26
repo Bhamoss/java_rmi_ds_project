@@ -1,13 +1,35 @@
 @startuml
 title Car renter wants to reserve cars at two car rental companies: A and B
 
-Client->???: checkForAvailableCarTypes() voor company A
+participant Client
+participant ReservationSession
+participant CarRentalAgency
+participant "crcA : CarRentalCompany" as CarRentalCompanyA
+participant "crcB : CarRentalCompany" as CarRentalCompanyB
+
+activate Client
+activate ReservationSession
+activate CarRentalAgency
+
+' cartype at company A
+Client->ReservationSession: checkForAvailableCarTypesAtCRC(crcA, ...)
+    note left : hoe checken voor specifieke \n company A? \n extra method voorzien die ook \n met company rekening houdt? \n Hier uitgewerkt met extra method
+ReservationSession->CarRentalAgency : getAvailableCarTypesAtCRC(crcA, ...) 
+
+CarRentalAgency->CarRentalCompanyA : getAvailableCarTypes(...)
+
+Client->ReservationSession:createQuote 
+note left  : hier idem hoe specifiek voor \n company A?
+
+' cartype at company B
+Client->ReservationSession: checkForAvailableCarTypesAtCRC(crcB, ...)
+
+ReservationSession->CarRentalAgency : getAvailableCarTypesAtCRC(crcB, ...) 
+
+CarRentalAgency->CarRentalCompanyB : getAvailableCarTypes(...)
 
 Client->ReservationSession:createQuote
-
-Client->???: checkForAvailableCarTypes() voor company B
-
-Client->ReservationSession:createQuote
+note left  : hier idem hoe specifiek voor \n company B?
 
 
 
