@@ -1,5 +1,5 @@
-<project name="RMI1" default="run.local" basedir=".">
-	<description>This is the build/run script for the RMI1 assignment. </description>
+<project name="RMI2" default="run.local" basedir=".">
+	<description>This is the build/run script for the RMI2 assignment. </description>
 
 	<!--
     *************************************************************
@@ -11,7 +11,7 @@
 	               server.mainClass: RentalServer
 	   
 	   The last parameter is the filename for the final zip.
-	   Set this to `rmi1.firstname.lastname`.
+	   Set this to `rmi2.firstname.lastname`.	   
     ************************************************************* -->
 	
 	<property name="client.package" value="client" />  <!-- Client package --> 
@@ -19,7 +19,7 @@
 	<property name="server.package" value="rental" />  <!-- Server package --> 
 	<property name="server.mainClass" value="RentalServer" />  <!-- Main class of server package (contains client `main` method) -->
 	
-	<property name="zip.filename" value="rmi1.Thomas.Bamelis" />  <!-- Name of zip file -->
+	<property name="zip.filename" value="rmi2.ADDFIRSTNAME.ADDLASTNAME" />  <!-- Name of zip file -->
 
 	<!--
     *************************************************************
