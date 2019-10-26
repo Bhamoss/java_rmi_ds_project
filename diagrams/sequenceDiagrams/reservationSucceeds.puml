@@ -1,0 +1,23 @@
+@startuml
+title "Rervation succeeds"
+
+participant Client
+participant ReservationSession
+participant CarRentalAgency
+participant "crcA : CarRentalCompany" as CarRentalCompanyA
+participant "crcB : CarRentalCompany" as CarRentalCompanyB
+
+
+activate Client
+activate ReservationSession
+activate CarRentalAgency
+
+== confirm the quote for the car type at CRC A ==
+
+
+== confirm the quote for the car type at CRC B ==
+
+
+
+
+@enduml
