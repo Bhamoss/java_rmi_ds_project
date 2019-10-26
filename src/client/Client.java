@@ -13,6 +13,7 @@ import rental.ReservationConstraints;
 import rental.ReservationException;
 import rental.ReservationSession;
 import rental.CarType;
+import rental.ICarRentalAgency;
 import rental.ICarRentalCompany;
 import rental.ManagerSession;
 
@@ -68,21 +69,21 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
 	 * CONSTRUCTOR *
 	 ***************/
 
-	public Client(String scriptFile, String carRentalCompanyName, int localOrRemote, ICarRentalCompany icrc) {
+	public Client(String scriptFile, int localOrRemote, ICarRentalAgency icra) {
 		super(scriptFile);
-		setCrc_stub(icrc);
+		setCra_stub(icra);
 		// ask CRA for session and set it, fuk dat crc
 	}
 
 	// The car rental company interface stub
-	private ICarRentalCompany crc_stub;
+	private ICarRentalAgency cra_stub;
 
-	private ICarRentalCompany getCrc_stub() {
-		return crc_stub;
+	private ICarRentalAgency getCra_stub() {
+		return cra_stub;
 	}
 
-	private void setCrc_stub(ICarRentalCompany crc_stub) {
-		this.crc_stub = crc_stub;
+	private void setCra_stub(ICarRentalAgency cra_stub) {
+		this.cra_stub = cra_stub;
 	}
 
 	/**
