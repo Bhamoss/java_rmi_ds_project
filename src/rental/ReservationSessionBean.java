@@ -5,8 +5,8 @@ import java.util.Collection;
 
 public class ReservationSessionBean extends Session implements ReservationSession {
 
-    public ReservationSessionBean(CarRentalAgency cra) {
-        super(cra);
+    public ReservationSessionBean(CarRentalAgency cra, String name) {
+        super(cra, name);
         this.quotes = new ArrayList<Quote>();
     }
 

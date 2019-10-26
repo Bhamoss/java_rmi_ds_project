@@ -20,6 +20,7 @@ import java.util.Set;
  */
 public interface ICarRentalCompany extends Remote {
 	
+	// CarType, Quote, Reservation, ReservationConstraints and ReservationException have been made Serializable
 	
 	/**
 	 * 

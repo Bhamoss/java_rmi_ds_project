@@ -5,7 +5,10 @@ import java.rmi.RemoteException;
 
 public interface ICarRentalAgency extends Remote {
 
-    public ReservationSession getNewReservationSession(String name) throws RemoteException;
+    // STRINGS SERIALIZABLE
 
-    public ManagerSession getNewManagerSession(String name, String carRentalName) throws RemoteException;
+    public String reserveReservationSession(String name) throws RemoteException;
+
+    public String reserveManagerSession(String name) throws RemoteException;
+
 }

@@ -17,8 +17,14 @@ public class RentalServer {
 	
 	private final static int LOCAL = 0;
 	private final static int REMOTE = 1;
-	public final static int RMI_PORT = 10926; //10926-10930
-	private final static int STUB_PORT = 10927; 
+	public   static int RMI_PORT = 10926; //10926-10930
+	public   static int RESERVATION_SESSIONS_PORT = 10927; 
+	public   static int MANAGER_SESSIONS_PORT = 10928;
+	public   static int CRCS_PORT = 10929;
+	public   static int CRA_PORT = 10930;
+	public   static String RMI_IP = "192.168.104.76";
+
+
 
 	public static void main(String[] args) throws ReservationException,
 			NumberFormatException, IOException {
@@ -40,6 +46,9 @@ public class RentalServer {
 		
 		ICarRentalCompany server_side_stub = null;
 		Registry registry;
+
+		String ip;
+		int rmiPort;
 		
 		if (localOrRemote == LOCAL) {
 			// main when executing local
@@ -70,6 +79,8 @@ public class RentalServer {
 			registry.rebind("crc", server_side_stub);
 			
 		}
+
+
 		
 	}
 

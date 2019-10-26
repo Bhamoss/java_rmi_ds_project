@@ -5,6 +5,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import rental.Quote;
@@ -55,7 +56,7 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
 		}
 
 		// An example reservation scenario on car rental company 'Hertz' would be...
-		Client client = new Client("simpleTrips", localOrRemote, client_side_cra_stub);
+		Client client = new Client("simpleTrips", localOrRemote, client_side_cra_stub, registry);
 
 		// starting here we can use the stub, when we have implemented everything ok
 		// I suggest adding a crc field to the client holding a stub so we can use the
@@ -69,9 +70,10 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
 	 * CONSTRUCTOR *
 	 ***************/
 
-	public Client(String scriptFile, int localOrRemote, ICarRentalAgency icra) {
+	public Client(String scriptFile, int localOrRemote, ICarRentalAgency icra, Registry registry) {
 		super(scriptFile);
 		setCra_stub(icra);
+		this.registry = registry;
 	}
 
 	// The car rental company interface stub
@@ -85,18 +87,38 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
 		this.cra_stub = cra_stub;
 	}
 
+	private final Registry registry;
+
+	/**
+	 * @return the registry
+	 */
+	private Registry getRegistry() {
+		return this.registry;
+	}
+
 	/***************************************************
 	 * Session methods
 	 ****************************************************/
 
+	private String reserveReservationSession(String name) throws Exception{
+		return getCra_stub().reserveReservationSession(name);
+	}
+
+
 	@Override
 	protected ReservationSession getNewReservationSession(String name) throws Exception {
-		return getCra_stub().getNewReservationSession(name);
+		String stub = reserveReservationSession(name);
+		return (ReservationSession) getRegistry().lookup(stub);
+	}
+
+	private String reserveManagerSession(String name) throws Exception{
+		return getCra_stub().reserveManagerSession(name);
 	}
 
 	@Override
 	protected ManagerSession getNewManagerSession(String name, String carRentalName) throws Exception {
-				return getCra_stub().getNewManagerSession(name, carRentalName);
+		String stub = reserveManagerSession(name);
+		return (ManagerSession) getRegistry().lookup(stub);
 	}
 
 
@@ -107,144 +129,74 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
 
 	@Override
 	protected void checkForAvailableCarTypes(ReservationSession session, Date start, Date end) throws Exception {
-		session.ch
-
-	}
-
-
-
-	/**
-	 * Check which car types are available in the given period (across all companies
-	 * and regions) and print this list of car types.
-	 *
-	 * @param start start time of the period
-	 * @param end   end time of the period
-	 * @throws Exception if things go wrong, throw exception
-	 */
-	@Override
-	protected void checkForAvailableCarTypes(Date start, Date end) throws RemoteException {
+		// TODO: make method
+		/*
 		System.out.print("\nAvailabel car types for period ");
 		System.out.print(start);
 		System.out.print(" - ");
 		System.out.print(end);
 		System.out.print("\n");
 		getCrc_stub().getAvailableCarTypes(start, end).stream().forEach(x -> System.out.println(x));
+		*/
 	}
 
-	/**
-	 * Retrieve a quote for a given car type (tentative reservation).
-	 * 
-	 * @param clientName name of the client
-	 * @param start      start time for the quote
-	 * @param end        end time for the quote
-	 * @param carType    type of car to be reserved
-	 * @param region     region in which car must be available
-	 * @return the newly created quote
-	 * 
-	 * @throws Exception if things go wrong, throw exception
-	 */
 	@Override
-	protected Quote createQuote(String clientName, Date start, Date end, String carType, String region)
-			throws ReservationException, RemoteException {
-
-		// 1) put the info into constraints
-
+	protected void addQuoteToSession(ReservationSession session, String name, Date start, Date end, String carType, String region) throws RemoteException{
 		ReservationConstraints rc = new ReservationConstraints(start, end, carType, region);
+		session.addQuote(rc);
+	}
 
-		// 2) call the stub function with the constraints
-		Quote q = getCrc_stub().createQuote(rc, clientName);
+	@Override
+	protected List<Reservation> confirmQuotes(ReservationSession session, String name) throws RemoteException{
+		// rollback possible here, can be done on CRA level but youĺl need error handling
+		return session.confirmQuotes(name);
+	}
 
-		// 3) print the results
+	@Override
+    protected String getCheapestCarType(ReservationSession session, Date start, Date end, String region) throws RemoteException {
+		return session.getCheapestCarType(start, end, region);
+	}
 
-		System.out.println(q);
 
-		return q;
+	/***********************************************************
+	 * MANAGERSESSION
+	 ***********************************************************/
+
+    protected void registerCrc(ManagerSession session, String name) throws RemoteException{
+		session.registerCRC(name);
+	}
+
+    protected void unregisterCrc(ManagerSession session, String name) throws RemoteException{
+		session.unregisterCRC(name);
+	}
+
+	@Override
+    protected int getNumberOfReservationsForCarType(ManagerSession ms, String carRentalName, String carType) throws RemoteException {
+		return ms.getNumberOfReservationsForCarType(carRentalName, carType);
+	}
+
+	@Override
+    protected int getNumberOfReservationsByRenter(ManagerSession ms, String clientName) throws RemoteException {
+		return ms.getNumberOfReservationsByRenter(clientName);
 	}
 
 	/**
-	 * Confirm the given quote to receive a final reservation of a car.
-	 * 
-	 * @param quote the quote to be confirmed
-	 * @return the final reservation of a car
-	 * 
-	 * @throws Exception if things go wrong, throw exception
-	 */
+	 * Alls renters who have the highest number of reservations
+	 **/
 	@Override
-	protected Reservation confirmQuote(Quote quote) throws ReservationException, RemoteException {
-
-		Reservation reservation = getCrc_stub().confirmQuote(quote);
-
-		System.out.println(reservation);
-
-		return reservation;
+    protected Set<String> getBestClients(ManagerSession ms) throws RemoteException {
+		return ms.getBestClients();
 	}
+
 
 	/**
-	 * Get all reservations made by the given client.
-	 *
-	 * @param clientName name of the client
-	 * @return the list of reservations of the given client
 	 * 
-	 * @throws Exception if things go wrong, throw exception
-	 */
+	 **/
 	@Override
-	protected List<Reservation> getReservationsByRenter(String clientName)
-			throws ReservationException, RemoteException {
-
-		List<Reservation> reservations = getCrc_stub().getReservationsByRenter(clientName);
-
-		reservations.stream().forEach(x -> System.out.println(x.clientInfo()));
-
-		return reservations;
+    protected CarType getMostPopularCarTypeIn(ManagerSession ms, String carRentalCompanyName, int year) throws RemoteException {
+		return ms.getMostPopularCarTypeIn(carRentalCompanyName, year);
 	}
 
-	/**
-	 * Get the number of reservations for a particular car type.
-	 * 
-	 * @param carType name of the car type
-	 * @return number of reservations for the given car type
-	 * 
-	 * @throws Exception if things go wrong, throw exception
-	 */
-	@Override
-	protected int getNumberOfReservationsForCarType(String carType) throws RemoteException {
-		return getCrc_stub().getNumberOfReservationsForCarType(carType);
-	}
-
-	
-
-
-	
-
-	@Override
-	protected void addQuoteToSession(Object session, String name, Date start, Date end, String carType, String region)
-			throws Exception {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	protected List confirmQuotes(Object session, String name) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	protected int getNumberOfReservationsByRenter(Object ms, String clientName) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	protected int getNumberOfReservationsForCarType(Object ms, String carRentalName, String carType) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	protected void processLine(String name, String cmd, List<Character> flags, StringTokenizer scriptLineTokens)
-			throws ApplicationException {
-		// TODO Auto-generated method stub
-
-	}
 }
+
+	
