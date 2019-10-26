@@ -36,26 +36,26 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
 		// indicates whether the application is run on the remote setup or not.
 		int localOrRemote = (args.length == 1 && args[0].equals("REMOTE")) ? REMOTE : LOCAL;
 
-		String agencyName = "Hertz";
+		String agencyName = "agency";
 
 		System.setSecurityManager(null);
 		//TODO: change to carRentalAgency
 		// the stub to filled with the remote object
-		ICarRentalCompany client_side_crc_stub = null;
+		ICarRentalAgency client_side_cra_stub = null;
 		Registry registry;
 
 		// split into local and remote cases
 
 		if (localOrRemote == LOCAL) {
 			registry = LocateRegistry.getRegistry("127.0.0.1", 1099);
-			client_side_crc_stub = (ICarRentalCompany) registry.lookup(agencyName);
+			client_side_cra_stub = (ICarRentalAgency) registry.lookup(agencyName);
 		} else {
 			registry = LocateRegistry.getRegistry("192.168.104.76", Client.RMI_PORT);
-			client_side_crc_stub = (ICarRentalCompany) registry.lookup(agencyName);
+			client_side_cra_stub = (ICarRentalAgency) registry.lookup(agencyName);
 		}
 
 		// An example reservation scenario on car rental company 'Hertz' would be...
-		Client client = new Client("simpleTrips", agencyName, localOrRemote, client_side_crc_stub);
+		Client client = new Client("simpleTrips", localOrRemote, client_side_cra_stub);
 
 		// starting here we can use the stub, when we have implemented everything ok
 		// I suggest adding a crc field to the client holding a stub so we can use the
@@ -72,7 +72,6 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
 	public Client(String scriptFile, int localOrRemote, ICarRentalAgency icra) {
 		super(scriptFile);
 		setCra_stub(icra);
-		// ask CRA for session and set it, fuk dat crc
 	}
 
 	// The car rental company interface stub
@@ -85,6 +84,34 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
 	private void setCra_stub(ICarRentalAgency cra_stub) {
 		this.cra_stub = cra_stub;
 	}
+
+	/***************************************************
+	 * Session methods
+	 ****************************************************/
+
+	@Override
+	protected ReservationSession getNewReservationSession(String name) throws Exception {
+		return getCra_stub().getNewReservationSession(name);
+	}
+
+	@Override
+	protected ManagerSession getNewManagerSession(String name, String carRentalName) throws Exception {
+				return getCra_stub().getNewManagerSession(name, carRentalName);
+	}
+
+
+	/********************************************************
+	 * Reservation session methods
+	 ********************************************************/
+
+
+	@Override
+	protected void checkForAvailableCarTypes(ReservationSession session, Date start, Date end) throws Exception {
+		session.ch
+
+	}
+
+
 
 	/**
 	 * Check which car types are available in the given period (across all companies
@@ -184,23 +211,10 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
 		return getCrc_stub().getNumberOfReservationsForCarType(carType);
 	}
 
-	@Override
-	protected Object getNewReservationSession(String name) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 
-	@Override
-	protected Object getNewManagerSession(String name, String carRentalName) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
-	@Override
-	protected void checkForAvailableCarTypes(Object session, Date start, Date end) throws Exception {
-		// TODO Auto-generated method stub
-
-	}
+	
 
 	@Override
 	protected void addQuoteToSession(Object session, String name, Date start, Date end, String carType, String region)
