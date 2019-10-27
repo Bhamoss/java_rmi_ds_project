@@ -129,25 +129,22 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
 
 	@Override
 	protected void checkForAvailableCarTypes(ReservationSession session, Date start, Date end) throws Exception {
-		// TODO: make method
-		/*
 		System.out.print("\nAvailabel car types for period ");
 		System.out.print(start);
 		System.out.print(" - ");
 		System.out.print(end);
 		System.out.print("\n");
-		getCrc_stub().getAvailableCarTypes(start, end).stream().forEach(x -> System.out.println(x));
-		*/
+		System.out.println(session.checkForAvailableCarTypes(start, end)); //stream().forEach(x -> System.out.println(x));
 	}
 
 	@Override
-	protected void addQuoteToSession(ReservationSession session, String name, Date start, Date end, String carType, String region) throws RemoteException{
+	protected void addQuoteToSession(ReservationSession session, String name, Date start, Date end, String carType, String region) throws RemoteException, ReservationException {
 		ReservationConstraints rc = new ReservationConstraints(start, end, carType, region);
 		session.addQuote(rc);
 	}
 
 	@Override
-	protected List<Reservation> confirmQuotes(ReservationSession session, String name) throws RemoteException{
+	protected List<Reservation> confirmQuotes(ReservationSession session, String name) throws RemoteException, ReservationException {
 		// rollback possible here, can be done on CRA level but youĺl need error handling
 		return session.confirmQuotes(name);
 	}
@@ -160,9 +157,11 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
 
 	/***********************************************************
 	 * MANAGERSESSION
+	 * 
+	 * @throws Exception
 	 ***********************************************************/
 
-    protected void registerCrc(ManagerSession session, String name) throws RemoteException{
+	protected void registerCrc(ManagerSession session, String name) throws Exception {
 		session.registerCRC(name);
 	}
 

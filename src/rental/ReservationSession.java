@@ -7,10 +7,12 @@ import java.util.List;
 
 public interface ReservationSession extends Remote{
 
-    // NO EXTRA SERIALIZABLE NEEDED (reservation already serialized an rest is serializable by default)
+    // NO EXTRA SERIALIZABLE NEEDED (reservation and its exception already serialized an rest is serializable by default)
 
-    public List<CarType> getAvailableCarTypes(Date start, Date end) throws RemoteException;
-    public void addQuote(ReservationConstraints rc)  throws RemoteException;
-    public List<Reservation> confirmQuotes(String name) throws RemoteException;
+	public String checkForAvailableCarTypes(Date start, Date end) throws RemoteException;
+    public void addQuote(ReservationConstraints rc)  throws RemoteException, ReservationException;
+    public List<Reservation> confirmQuotes(String name) throws RemoteException, ReservationException;
     public String getCheapestCarType(Date start, Date end, String region)  throws RemoteException;
+
+    public void closeSession() throws Exception;
 }

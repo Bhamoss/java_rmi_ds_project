@@ -70,7 +70,7 @@ public class RentalServer {
 			
 			
 			
-			server_side_stub = (ICarRentalCompany) UnicastRemoteObject.exportObject(server_side_crc, STUB_PORT);
+			server_side_stub = (ICarRentalCompany) UnicastRemoteObject.exportObject(server_side_crc, CRCS_PORT);
 			
 			
 			registry = LocateRegistry.createRegistry(RMI_PORT);

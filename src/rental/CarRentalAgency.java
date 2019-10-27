@@ -1,12 +1,16 @@
 package rental;
 
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Date;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class CarRentalAgency implements ICarRentalAgency {
 
@@ -18,7 +22,7 @@ public class CarRentalAgency implements ICarRentalAgency {
 
     private final Registry registry;
 
-    private Registry getRegistry() {
+    public Registry getRegistry() {
         return this.registry;
     }
 
@@ -36,11 +40,19 @@ public class CarRentalAgency implements ICarRentalAgency {
     }
 
     public void registerCRC(String name) throws Exception{
-        ICarRentalCompany newCompany = (ICarRentalCompany) getRegistry().lookup(name);
-        addCompany(name, newCompany);
+        try {
+            ICarRentalCompany newCompany = (ICarRentalCompany) getRegistry().lookup(name);
+            addCompany(name, newCompany);
+        }
+        catch (NotBoundException e){
+            System.out.println(name + ": the crc with that name has not been made available on the local registry");
+            throw e;
+        }
+        catch (Exception e ) {throw e;}
     }
 
     public void unregisterCRC(String name) {
+        // crc is responsible for removing itself, TODO: we do it?
         removeCompany(name);
     }
 
@@ -53,31 +65,69 @@ same port number (within your port range) for multiple exported objects when usi
     */
 
     public String reserveReservationSession(String name) throws RemoteException{
-        
+        // the bean pushes itself onto the registry when created 
         ReservationSessionBean server_side_rs = new ReservationSessionBean(this, name);
-        ReservationSession server_side_stub = (ReservationSession) UnicastRemoteObject.exportObject(server_side_rs, RentalServer.RESERVATION_SESSIONS_PORT);
-
-        while ( Arrays.asList( registry.list()).contains(name)) {
-            name += 'x';
-        }
-			
-			// we make our stub available in the registry
-		registry.rebind(name, server_side_stub);
-        return name;
+        return server_side_rs.getRegistryName();
     }
     
     public String reserveManagerSession(String name) throws RemoteException {
         ManagerSessionBean server_side_ms = new ManagerSessionBean(this, name);
-        ManagerSession server_side_stub = (ManagerSession) UnicastRemoteObject.exportObject(server_side_ms, RentalServer.MANAGER_SESSIONS_PORT);
+        return server_side_ms.getRegistryName();
+    }
+    
+    /*******************************************
+     * RESERVATION session functions.
+     */
 
-        while ( Arrays.asList( registry.list()).contains(name)) {
-            name += 'x';
-        }
-			
-			// we make our stub available in the registry
-		registry.rebind(name, server_side_stub);
-        return name;
-	}
+    //TODO
+    public String checkForAvailableCarTypes(Date start, Date end) throws RemoteException {
+        return null;
+    }
     
 
+    // TODO
+	public Quote createQuote(ReservationConstraints constraints, String client)
+			throws ReservationException {
+                return null;
+    }
+
+    //TODO
+    // synchronised here solves the problem of different confirmquotes 
+    public synchronized List<Reservation> confirmQuotes(String name) throws RemoteException {
+        // TODO: checking if quots are still valid and not yet taken
+        // TODO: when confirming quotes, synchronize crc so we cannot get a createQuote and confirmQuote together
+        return null;
+    }
+
+
+    //TODO
+    public String getCheapestCarType(Date start, Date end, String region) throws RemoteException {
+        return null ;
+    }
+
+    /*******************************************
+     * MANAGER session functions.
+     */
+
+    //TODO
+    public int getNumberOfReservationsForCarType(String carRentalName, String carType) throws RemoteException {
+        return 0;
+    }
+
+
+    //TODO
+    public int getNumberOfReservationsByRenter(String clientName) throws RemoteException {
+        return 0;
+    }
+
+    //TODO
+    public Set<String> getBestClients() throws RemoteException {
+        return null;
+    }
+
+    //TODO
+    public CarType getMostPopularCarTypeIn(String carRentalCompanyName, int year) throws RemoteException {
+        return null;
+    }
+    
 }
