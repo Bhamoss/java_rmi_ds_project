@@ -53,6 +53,8 @@ public abstract class Session {
      * @throws Exception
      */
     public void closeSession() throws Exception{
+        // I do not put this in the explicit destructor (if that even is a thing in java) because the rmi registery
+        // will hold a reference to this object, causing the garbage collector to not delete it
         getCra().getRegistry().unbind(getRegistryName());
     }
 

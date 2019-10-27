@@ -8,6 +8,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Date;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -52,7 +53,7 @@ public class CarRentalAgency implements ICarRentalAgency {
     }
 
     public void unregisterCRC(String name) {
-        // crc is responsible for removing itself, TODO: we do it?
+        // crc is responsible for removing itself from the registry, TODO: we do it?
         removeCompany(name);
     }
 
@@ -79,9 +80,17 @@ same port number (within your port range) for multiple exported objects when usi
      * RESERVATION session functions.
      */
 
-    //TODO
     public String checkForAvailableCarTypes(Date start, Date end) throws RemoteException {
-        return null;
+        Set<CarType> availableTypes = new HashSet<CarType>();
+        for (ICarRentalCompany crc : companies.values() ){
+            //TODO: duplicates?
+            availableTypes.addAll(crc.getAvailableCarTypes(start, end));
+        }
+        String ret = "";
+        for (CarType type : availableTypes) {
+            ret += type.toString() + '\n';
+        }
+        return ret;
     }
     
 
