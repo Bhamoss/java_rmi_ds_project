@@ -13,16 +13,16 @@
 	Answer 1
 	
 	\paragraph{Question 2} 
-	Answer 2
+	Alst over de draad moet basicly, zoals een CarType bijvoorbeeld
 	
 	\paragraph{Question 3} 
-	Answer 3
+	als ze methods bevatten die remotely callable zijn. de interface extends van Remote, de klasse implementeerd die, zoals ICarRentalAgency en CarRentalAgency.
 	
 	\paragraph{Question 4} 
-	Answer 4
+	gewoon kijken wat er naar server meegegeven wordt en wat er terug gegeven wordt?
 	
 	\paragraph{Question 5} 
-	Answer 5
+	
 	
 	\paragraph{Question 6} 
 	Answer 6
@@ -34,7 +34,10 @@
 	Answer 8
 	
 	\paragraph{Question 9} 
-	Answer 9
+	block van synchronized, alles van de klasse CarRentalAgency moet wachten als createQuote en confirmQuote opgeroepen worden. 
+	Anders kan er verkeerde info doorgegeven worden met de andere methods, bijvoorbeeld checkAvailableCarTypes. 
+	Bij het doorgeven van verkeerde info kan dan een foute quote gecreeerd worden. deze zal resulteren in een error, en zal de checkAvailableCarTypes terug
+	opgeroepen moeten worden 
 	
 	\clearpage
 	
