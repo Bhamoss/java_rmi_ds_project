@@ -24,7 +24,7 @@ deactivate CarRentalCompanyA
 ReservationSession-->Client : print set of available cartypes
 
 == create quote for a car type at CRC A ==
-Client->ReservationSession:createQuote 
+Client->ReservationSession: addQuote() 
 note left  : hier idem hoe specifiek voor \n company A?
 
 == check availability of a car type at CRC B ==
@@ -40,7 +40,7 @@ deactivate CarRentalCompanyB
 ReservationSession-->Client : print set of available cartypes
 
 == create quote for a car type at CRC B ==
-Client->ReservationSession:createQuote
+Client->ReservationSession: addQuote()
 note left  : hier idem hoe specifiek voor \n company B?
 
 

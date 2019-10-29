@@ -135,8 +135,6 @@ public class CarRentalCompany implements ICarRentalCompany{
 				mostPopularCarType = r.getCarType();
 			}
 		}
-
-
 		
 		return mostPopularCarType;
 	}
