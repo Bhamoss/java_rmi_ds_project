@@ -6,6 +6,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Date;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -60,12 +61,14 @@ public class CarRentalAgency implements ICarRentalAgency {
     }
 
     /**
-     * returns the carrentalcompany which has the given name 
-     *      if there are multiple crc's, the first one is returned
+     * returns the carrentalcompany which has the given name if there are multiple
+     * crc's, the first one is returned
+     * 
      * @param crcName
      * @return
+     * @throws RemoteException
      */
-    private ICarRentalCompany getCarRentalCompany(String crcName) {
+    private ICarRentalCompany getCarRentalCompany(String crcName) throws RemoteException {
         for (ICarRentalCompany crc : companies.values()) {
             if (crc.getName().equals(crcName)) {
                 return crc;
@@ -111,17 +114,40 @@ same port number (within your port range) for multiple exported objects when usi
     }
     
 
-    // TODO
 	public Quote createQuote(ReservationConstraints constraints, String client)
-			throws ReservationException {
-                return null;
+			throws ReservationException, RemoteException {
+                synchronized (this) {
+                    for (ICarRentalCompany crc : companies.values()){
+                        try {
+                            return crc.createQuote(constraints, client);
+                        }
+                        catch (ReservationException e){
+                            // No company can create a quote with those constraints.
+                        }
+                    }
+
+                    throw new ReservationException("No company can create a quote with those constraints.");
+            }
     }
 
-    //TODO
+
     // synchronised here solves the problem of different confirmquotes 
-    public synchronized List<Reservation> confirmQuotes(String name) throws RemoteException {
-        // TODO: checking if quots are still valid and not yet taken
-        // TODO: when confirming quotes, synchronize crc so we cannot get a createQuote and confirmQuote together
+    public synchronized List<Reservation> confirmQuotes(List<Quote> quotes) throws RemoteException, ReservationException {
+        List<Reservation> reservations = new ArrayList<Reservation>();
+        synchronized (this) {
+            for (Quote quote : quotes) {
+                String crcName = quote.getRentalCompany();
+                ICarRentalCompany crc = getCarRentalCompany(crcName);
+                try {
+                    reservations.add(crc.confirmQuote(quote));
+                } catch (ReservationException e) {
+                    for (Reservation reservation : reservations) {
+                        getCarRentalCompany(reservation.getRentalCompany()).cancelReservation(reservation);
+                    }
+                    throw new ReservationException("A quote was not available anymore.");
+                }
+            }
+        }
         return null;
     }
 
@@ -141,7 +167,8 @@ same port number (within your port range) for multiple exported objects when usi
     public String getCheapestCarType(Date start, Date end, String region) throws RemoteException {
         
         double cheapestPrice = Double.MAX_VALUE;
-        CarType cheapestCarType, tmpCarType;
+        CarType cheapestCarType = null;
+        CarType tmpCarType;
 
         for (ICarRentalCompany crc : companies.values()) {
             if (region == null || crc.operatesInRegion(region)) {
@@ -154,7 +181,7 @@ same port number (within your port range) for multiple exported objects when usi
         }
 
 
-        return cheapestCarType;
+        return cheapestCarType.toString();
     }
 
     /*******************************************
@@ -180,19 +207,20 @@ same port number (within your port range) for multiple exported objects when usi
 
 
     /**
-     * Get the number of reservations made by the given renter (across whole
-     * rental agency).
+     * Get the number of reservations made by the given renter (across whole rental
+     * agency).
      *
      * @param clientName name of the renter
-     * @return	the number of reservations of the given client (across whole
-     * rental agency)
+     * @return the number of reservations of the given client (across whole rental
+     *         agency)
+     * @throws ReservationException
      *
-     * @throws Exception if things go wrong, throw exception
+     * @throws Exception            if things go wrong, throw exception
      */
     public int getNumberOfReservationsByRenter(String clientName) throws RemoteException {
         int nbReservations = 0;
         for (ICarRentalCompany crc : companies.values()) {
-            nbReservations += crc.getReservationsByRenter(clientName);
+            nbReservations += crc.getReservationsByRenter(clientName).size();
         }
         return nbReservations;
     }
@@ -206,7 +234,7 @@ same port number (within your port range) for multiple exported objects when usi
      */
     public Set<String> getBestClients() throws RemoteException {
 
-        Set<String> bestClients = new Set<String>();
+        Set<String> bestClients = new HashSet<String>();
         int highestNbReservations = 0;
         
         int tmpNbReservations;
@@ -231,7 +259,7 @@ same port number (within your port range) for multiple exported objects when usi
      * @throws RemoteException
      */
     private Set<String> getAllClientNames() throws RemoteException {
-        Set<String> allClients = new Set<String>();
+        Set<String> allClients = new HashSet<String>();
 
         for (ICarRentalCompany crc : companies.values()) {
             allClients.addAll(crc.getAllClientNames());
@@ -248,7 +276,7 @@ same port number (within your port range) for multiple exported objects when usi
      *
      * @throws Exception carRentalCompanyName not found
      */
-    public CarType getMostPopularCarTypeIn(String carRentalCompanyName, int year) throws Exception, RemoteException {
+    public CarType getMostPopularCarTypeIn(String carRentalCompanyName, int year) throws Exception {
         ICarRentalCompany crc = getCarRentalCompany(carRentalCompanyName);
         if (crc == null)
             throw new Exception("Car rental company is not registered.");

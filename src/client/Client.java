@@ -171,7 +171,7 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
 	}
 
 	@Override
-    protected int getNumberOfReservationsForCarType(ManagerSession ms, String carRentalName, String carType) throws RemoteException {
+    protected int getNumberOfReservationsForCarType(ManagerSession ms, String carRentalName, String carType) throws Exception {
 		return ms.getNumberOfReservationsForCarType(carRentalName, carType);
 	}
 
@@ -190,10 +190,12 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
 
 
 	/**
+	 * @throws Exception
 	 * 
 	 **/
 	@Override
-    protected CarType getMostPopularCarTypeIn(ManagerSession ms, String carRentalCompanyName, int year) throws RemoteException {
+	protected CarType getMostPopularCarTypeIn(ManagerSession ms, String carRentalCompanyName, int year)
+			throws Exception {
 		return ms.getMostPopularCarTypeIn(carRentalCompanyName, year);
 	}
 

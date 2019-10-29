@@ -36,7 +36,8 @@ same port number (within your port range) for multiple exported objects when usi
 
 
     @Override
-    public int getNumberOfReservationsForCarType(String carRentalName, String carType) throws RemoteException {
+    public int getNumberOfReservationsForCarType(String carRentalName, String carType)
+            throws RemoteException, Exception {
         return getCra().getNumberOfReservationsForCarType(carRentalName, carType);
     }
 
@@ -51,7 +52,7 @@ same port number (within your port range) for multiple exported objects when usi
     }
 
     @Override
-    public CarType getMostPopularCarTypeIn(String carRentalCompanyName, int year) throws RemoteException {
+    public CarType getMostPopularCarTypeIn(String carRentalCompanyName, int year) throws Exception {
         return getCra().getMostPopularCarTypeIn(carRentalCompanyName, year);
     }
 

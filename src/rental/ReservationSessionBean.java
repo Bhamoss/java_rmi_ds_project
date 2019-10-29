@@ -26,7 +26,7 @@ same port number (within your port range) for multiple exported objects when usi
     }
 
 
-    private final Collection<Quote> quotes;
+    private final List<Quote> quotes;
     
     private void addQuote(Quote quote) {
         quotes.add(quote);
@@ -49,7 +49,7 @@ same port number (within your port range) for multiple exported objects when usi
     public List<Reservation> confirmQuotes(String name) throws RemoteException, ReservationException {
         // we still have a problem if something happens to the car rental company now, but we could make the confirmQuote a synchronised method
         // we don't need the name parameter?
-        return getCra().confirmQuotes(name);
+        return getCra().confirmQuotes(quotes);
     }
 
     @Override
