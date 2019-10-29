@@ -147,7 +147,7 @@ class CarRentalAgency {
     + getRegistry() : Registry
     registerCRC(String name) 
     unregisterCRC(String name)
-    - addCompany(String name, ICarRentalCompany company)
+    - zaddCompany(String name, ICarRentalCompany company)
     - removeCompany(String name)
 
 
