@@ -88,9 +88,11 @@ class Session {
     - registryName : String {final}
     __
     Session(CarRentalAgency cra, String name)
+    #  pushToRegistry() {abstract}
     
-    
-    CarRentalAgency getCra()
+    # getCra() : CarRentalAgency
+    + getRegistryName() : String
+    + getName() : String
 
     closeSession()
 }
@@ -139,7 +141,29 @@ ManagerSessionBean ..|> ManagerSession : stub
 
 
 class CarRentalAgency {
-    NameService : Map<String, ICarRentalCompany>
+    - registry : Registry {final}
+    - companies : Map<String, ICarRentalCompany>
+
+    + getRegistry() : Registry
+    registerCRC(String name) 
+    unregisterCRC(String name)
+    - addCompany(String name, ICarRentalCompany company)
+    - removeCompany(String name)
+
+
+    reserveReservationSession(String name) : String
+    reserveManagerSession(String name) : String
+
+    checkForAvailableCarTypes(Date start, Date end) : String
+    + createQuote(ReservationConstraints constraints, String client) : Quote
+    confirmQuotes(String name) : List<Reservation>
+    getCheapestCarType(Date start, Date end, String region) : String
+
+    getNumberOfReservationsForCarType(String carRentalName, String carType) : int
+    getNumberOfReservationsByRenter(String clientName) : int
+    getBestClients() : Set<String>
+    getMostPopularCarTypeIn(String carRentalCompanyName, int year) : CarType
+
     __
     Remote
 }
