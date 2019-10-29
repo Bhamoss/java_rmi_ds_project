@@ -42,6 +42,7 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
 
 		if (localOrRemote == LOCAL) {
 			// set registry ip to local when executing local
+			RentalServer.RMI_PORT = 1099;
 			RentalServer.RMI_IP = "127.0.0.1";
 		}
 
@@ -56,6 +57,9 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
 		// stub in the mehtods
 
 		// this runs the tests of the supervisors
+
+		System.out.println("Starting client run over the test script.");
+
 		client.run();
 	}
 

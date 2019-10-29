@@ -55,11 +55,14 @@ public class RentalServer {
 		
 		Registry registry;
 		
+		
+
 		if (localOrRemote == LOCAL) {
 			// main when executing local
 
 			// important to set variables because the classes use them
 			// 0 means it will choose a random free port
+			RMI_PORT = 1099;
 			RESERVATION_SESSIONS_PORT = 0; 
 			MANAGER_SESSIONS_PORT = 0;
 			CRCS_PORT = 0;
