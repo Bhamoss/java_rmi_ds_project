@@ -100,6 +100,13 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
 	 * Session methods
 	 ****************************************************/
 
+	/**
+	 * Creates a reservation session on the server, which posts itself onto the registry on the server, and returns the identifier.
+	 * 
+	 * @param name
+	 * @return
+	 * @throws Exception
+	 */
 	private String reserveReservationSession(String name) throws Exception{
 		return getCra_stub().reserveReservationSession(name);
 	}

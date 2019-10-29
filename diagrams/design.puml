@@ -4,24 +4,33 @@ title Design
 
 package clientside{
 class Client {
-    cra : CarRentalAgency
 
-    Client(cra : CarRentalAgency) : Client {Constructor, vraagt session}
+    Client(String scriptFile, int localOrRemote, ICarRentalAgency icra, Registry registry) {Constructor, vraagt session}
+    getCra_stub() : ICarRentalAgency
+    setCra_stub(ICarRentalAgency cra_stub)
+    getRegistry() : Registry
+
+__ session managing __
+
+    reserveReservationSession(String name) : String
     getNewReservationSession(String name) : ReservationSession
+    reserveManagerSession(String name) : String
     getNewManagerSession(String name, String carRentalName) : ManagerSession
     
+__ reservation session __
+
     checkForAvailableCarTypes(ReservationSession session, Date start, Date end)
     addQuoteToSession(ReservationSession session, String name, Date start, Date end, String carType, String region) : void
     confirmQuotes(ReservationSession session, String name) : List<Reservation>
+    getCheapestCarType(ReservationSession session, Date start, Date end, String region) : String 
 
-
-    registerCrc(name : String)
-    unregisterCrc(name : String)
+__ manager session __
+    registerCrc(ManagerSession session, name : String)
+    unregisterCrc(ManagerSession session, name : String)
 
     getNumberOfReservationsForCarType(ManagerSession ms, String carRentalName, String carType) : int
     getNumberOfReservationsByRenter(ManagerSession ms, String clientName) : int
     getBestClients(ManagerSession ms) : Set<String> 
-    getCheapestCarType(ReservationSession session, Date start, Date end, String region) : String 
     getMostPopularCarTypeIn(ManagerSession ms, String carRentalCompanyName, int year) : CarType 
 
 }
@@ -31,30 +40,39 @@ Client ..> ManagerSession : uses
 
 
 interface ManagerSession {
-    registerCRC()
-    unregisterCRC()
-    getCRCs()
-    getCRCCarTypes(crc)
-    getNbReservations(type: CarType)
-    getBestClients()
-    getNbReservationsRenter(renter)
+    registerCRC(String name) 
+    unregisterCRC(String name)
+    
+    getNumberOfReservationsForCarType(String carRentalName, String carType) : int
+    getNumberOfReservationsByRenter(String clientName) : int
+    getBestClients() : Set<String>
     getMostPopularCarTypeIn(String carRentalCompanyName, int year) : CarType
+
+    closeSession()
 }
 interface ReservationSession {
-    createQuote(ReservationConstraints constraints, String client) : Quote
-    getCurrentQuotes() : Collection<Quote>
-    confirmQuotes()
     checkForAvailableCarTypes(Date start, Date end) {prints to output}
+    addQuote(ReservationConstraints rc)
+    confirmQuotes(String name) : List<Reservation>
     getCheapestCarType(Date start, Date end, String region) : String
+
+    closeSession()
 }
 interface ICarRentalAgency {
-    getNewReservationSession(String name) : ReservationSession
-    getNewManagerSession(String name, String carRentalName) : ManagerSession
+    reserveReservationSession(String name) : String
+    reserveManagerSession(String name) : String
+    
 }
 }
 
 
 package centralPoint{
+
+class Registry {
+
+}
+Client -->"1" Registry
+CarRentalAgency -->"1" Registry
 
 interface ICarRentalCompany {
     Set<CarType> getAvailableCarTypes(Date start, Date end)
@@ -65,21 +83,31 @@ interface ICarRentalCompany {
 }
 
 class Session {
-    private final CarRentalAgency cra;
+    - cra : CarRentalAgency {final}
+    - name : String {final}
+    - registryName : String {final}
     __
-    Session(CarRentalAgency cra)
+    Session(CarRentalAgency cra, String name)
+    
+    
     CarRentalAgency getCra()
+
+    closeSession()
 }
 Session -->"1" CarRentalAgency
 
 class ReservationSessionBean {
-    state : List<Quotes>
+    quotes : List<Quotes>
     __
-    createQuote()
-    getCurrentQuotes()
-    confirmQuotes()
-    getAvailableCarTypes()
-    getCheapestCarType()
+    ReservationSessionBean(CarRentalAgency cra, String name)
+
+    # pushToRegistry() {Override}
+
+    - addQuote(Quote quote)
+    checkForAvailableCarTypes(Date start, Date end) : String
+    + addQuote(ReservationConstraints rc)
+    confirmQuotes(String name) : List<Reservation>
+    getCheapestCarType(Date start, Date end, String region) : String
     __
     Remote
 }
@@ -92,14 +120,17 @@ interface ReservationSession
 
 
 class ManagerSessionBean {
-    registerCRC()
-    unregisterCRC()
-    getCRCs()
-    getCRCCarTypes(crc)
-    getNbReservations(type: CarType)
-    getBestCustomer()
-    getNbReservationsRenter(renter)
-    getMostPopularCRC(date: Date)
+    ManagerSessionBean(CarRentalAgency cra, String name)
+
+    # pushToRegistry() {Override}
+
+    registerCRC(String name) 
+    unregisterCRC(String name)
+    
+    getNumberOfReservationsForCarType(String carRentalName, String carType) : int
+    getNumberOfReservationsByRenter(String clientName) : int
+    getBestClients() : Set<String>
+    getMostPopularCarTypeIn(String carRentalCompanyName, int year) : CarType
     __
     Remote
 }
