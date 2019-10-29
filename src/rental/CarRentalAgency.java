@@ -30,6 +30,8 @@ public class CarRentalAgency implements ICarRentalAgency {
     
     // A company is itself responsible for binding itself to the registry
     // of the CRA
+    // keys = name of registry
+    // values = crc's
     private final Map<String, ICarRentalCompany> companies;
 
     private void addCompany(String name, ICarRentalCompany company) {
@@ -55,6 +57,21 @@ public class CarRentalAgency implements ICarRentalAgency {
     public void unregisterCRC(String name) {
         // crc is responsible for removing itself from the registry, TODO: we do it?
         removeCompany(name);
+    }
+
+    /**
+     * returns the carrentalcompany which has the given name 
+     *      if there are multiple crc's, the first one is returned
+     * @param crcName
+     * @return
+     */
+    private ICarRentalCompany getCarRentalCompany(String crcName) {
+        for (ICarRentalCompany crc : companies.values()) {
+            if (crc.getName().equals(crcName)) {
+                return crc;
+            }
+        }
+        return null;
     }
 
 
@@ -109,34 +126,134 @@ same port number (within your port range) for multiple exported objects when usi
     }
 
 
-    //TODO
+    
+    /**
+     * Find a cheapest car type that is available in the given period and region.
+     *
+     * @param start start time of the period
+     * @param end end time of the period
+     * @param region region of interest (if null, no limitation by region)
+     *
+     * @return name of a cheapest car type for the given period
+     *
+     * @throws Exception if things go wrong, throw exception
+     */
     public String getCheapestCarType(Date start, Date end, String region) throws RemoteException {
-        return null ;
+        
+        double cheapestPrice = Double.MAX_VALUE;
+        CarType cheapestCarType, tmpCarType;
+
+        for (ICarRentalCompany crc : companies.values()) {
+            if (region == null || crc.operatesInRegion(region)) {
+                tmpCarType = crc.getCheapestCarType(start, end);
+                if (cheapestPrice > tmpCarType.getRentalPricePerDay()) {
+                    cheapestPrice = tmpCarType.getRentalPricePerDay();
+                    cheapestCarType = tmpCarType;
+                }
+            }
+        }
+
+
+        return cheapestCarType;
     }
 
     /*******************************************
      * MANAGER session functions.
      */
 
-    //TODO
-    public int getNumberOfReservationsForCarType(String carRentalName, String carType) throws RemoteException {
-        return 0;
+    /**
+     * Get the number of reservations for a particular car type.
+     *
+     * @param carRentalName name of the rental company managed by this session
+     * @param carType name of the car type
+     * @return number of reservations for this car type
+     *
+     * @throws Exception if things go wrong, throw exception
+     */    
+    public int getNumberOfReservationsForCarType(String carRentalName, String carType) throws RemoteException, Exception {
+        
+        ICarRentalCompany crc = getCarRentalCompany(carRentalName);
+        if (crc == null)
+            throw new Exception("Car rental name is not registered in this carrentalagency.");
+        return crc.getNumberOfReservationsForCarType(carType);
     }
 
 
-    //TODO
+    /**
+     * Get the number of reservations made by the given renter (across whole
+     * rental agency).
+     *
+     * @param clientName name of the renter
+     * @return	the number of reservations of the given client (across whole
+     * rental agency)
+     *
+     * @throws Exception if things go wrong, throw exception
+     */
     public int getNumberOfReservationsByRenter(String clientName) throws RemoteException {
-        return 0;
+        int nbReservations = 0;
+        for (ICarRentalCompany crc : companies.values()) {
+            nbReservations += crc.getReservationsByRenter(clientName);
+        }
+        return nbReservations;
     }
 
-    //TODO
+    /**
+     * Get the (list of) best clients, i.e. clients that have highest number of
+     * reservations (across all rental agencies).
+     *
+     * @return set of best clients
+     * @throws Exception if things go wrong, throw exception
+     */
     public Set<String> getBestClients() throws RemoteException {
-        return null;
+
+        Set<String> bestClients = new Set<String>();
+        int highestNbReservations = 0;
+        
+        int tmpNbReservations;
+        for (String clientName : getAllClientNames()) {
+            tmpNbReservations = getNumberOfReservationsByRenter(clientName);
+            if (tmpNbReservations > highestNbReservations) {
+                // delete alle clients uit bestClients en voeg deze eraan toe, update highestNbReservations
+                highestNbReservations = tmpNbReservations;
+                bestClients.clear();
+            }
+            if (tmpNbReservations == highestNbReservations) {
+                bestClients.add(clientName);
+            }
+        }
+        
+        return bestClients;
     }
 
-    //TODO
-    public CarType getMostPopularCarTypeIn(String carRentalCompanyName, int year) throws RemoteException {
-        return null;
+    /**
+     * returns a list of all the clients
+     * @return
+     * @throws RemoteException
+     */
+    private Set<String> getAllClientNames() throws RemoteException {
+        Set<String> allClients = new Set<String>();
+
+        for (ICarRentalCompany crc : companies.values()) {
+            allClients.addAll(crc.getAllClientNames());
+        } 
+        return allClients;
+    }
+
+    /**
+     * Get the most popular car type in the given car rental company.
+     *
+     * @param	carRentalCompanyName The name of the car rental company.
+     * @param year year in question
+     * @return the most popular car type in the given car rental company
+     *
+     * @throws Exception carRentalCompanyName not found
+     */
+    public CarType getMostPopularCarTypeIn(String carRentalCompanyName, int year) throws Exception, RemoteException {
+        ICarRentalCompany crc = getCarRentalCompany(carRentalCompanyName);
+        if (crc == null)
+            throw new Exception("Car rental company is not registered.");
+            
+        return crc.getMostPopularCarTypeIn(year);
     }
     
 }
