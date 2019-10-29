@@ -69,7 +69,7 @@ public interface ICarRentalCompany extends Remote {
 	 * @throws RemoteException
 	 */
 	public List<Reservation> getReservationsByRenter(String clientName) 
-			throws ReservationException, RemoteException;
+			throws RemoteException;
 	
 	/**
 	 * 
@@ -88,4 +88,6 @@ public interface ICarRentalCompany extends Remote {
 	public Set<String> getAllClientNames() throws RemoteException;
 
 	public CarType getMostPopularCarTypeIn(int year) throws RemoteException;
+
+	public void cancelReservation(Reservation res) throws RemoteException;
 }

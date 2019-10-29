@@ -104,9 +104,9 @@ public class CarRentalCompany implements ICarRentalCompany{
 	 */
 	public CarType getCheapestCarType(Date start, Date end) {
 		double cheapestPrice = Double.MAX_VALUE;
-		CarType cheapestCarType;
+		CarType cheapestCarType = null;
 		for (CarType ct : getAvailableCarTypes(start, end)) {
-			if (cheapestPrice > ct.getRentalPricePerDay()) {
+			if (cheapestPrice >= ct.getRentalPricePerDay()) {
 				cheapestCarType = ct;
 				cheapestPrice = ct.getRentalPricePerDay();
 			}
@@ -120,23 +120,28 @@ public class CarRentalCompany implements ICarRentalCompany{
 	 */
 	public CarType getMostPopularCarTypeIn(int year) {
 
-		Map<CarType, Integer> cntCarTypes = new Map<CarType, Integer>();
+		Map<String, Integer> cntCarTypes = new HashMap<String, Integer>();
 		Integer amountReservations;
 		int highestNbRes = 0;
-		CarType mostPopularCarType;
+		String mostPopularCarType = "";
 		for (Reservation r : getAllReservationsIn(year)) {
 			amountReservations = 1;
 			if (cntCarTypes.containsKey(r.getCarType())) {
-				amountReservations += CarTypes.get(r.getCarType());
+				amountReservations += cntCarTypes.get(r.getCarType());
 			}
 			cntCarTypes.put(r.getCarType(), amountReservations);
+
 			if (amountReservations > highestNbRes) {
 				highestNbRes = amountReservations;
 				mostPopularCarType = r.getCarType();
 			}
 		}
 		
-		return mostPopularCarType;
+		for (CarType ct : getAllCarTypes()) {
+			if (ct.getName().equals(mostPopularCarType)) return ct;
+		}
+
+		return null;
 	}
 	
 	
@@ -171,7 +176,7 @@ public class CarRentalCompany implements ICarRentalCompany{
 	 ***********/
 
 	public Set<String> getAllClientNames() {
-		Set<String> clients = new Set<String>();
+		Set<String> clients = new HashSet<String>();
 		for (Reservation r : getAllReservations()) {
 			clients.add(r.getCarRenter());
 		}
@@ -191,8 +196,7 @@ public class CarRentalCompany implements ICarRentalCompany{
 				.size();
 	}
 	
-	public List<Reservation> getReservationsByRenter(String clientName) 
-			throws ReservationException {
+	public List<Reservation> getReservationsByRenter(String clientName){
 		return getAllReservations().stream()
 				.filter(x -> x.getCarRenter().equals(clientName))
 				.collect(Collectors.toList());
@@ -253,6 +257,8 @@ public class CarRentalCompany implements ICarRentalCompany{
 		return rentalPricePerDay * Math.ceil((end.getTime() - start.getTime())
 						/ (1000 * 60 * 60 * 24D));
 	}
+
+
 
 	// made this method synchronised
 	public synchronized Reservation confirmQuote(Quote quote) throws ReservationException {

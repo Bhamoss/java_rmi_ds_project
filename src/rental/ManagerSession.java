@@ -13,10 +13,10 @@ public interface ManagerSession extends Remote {
     public void registerCRC(String name) throws Exception;
     public void unregisterCRC(String name) throws RemoteException;
 
-    public int getNumberOfReservationsForCarType(String carRentalName, String carType)  throws RemoteException;
+    public int getNumberOfReservationsForCarType(String carRentalName, String carType)  throws RemoteException, Exception;
     public int getNumberOfReservationsByRenter(String clientName)  throws RemoteException;
     public Set<String> getBestClients()  throws RemoteException;
-    public CarType getMostPopularCarTypeIn(String carRentalCompanyName, int year)  throws RemoteException;
+    public CarType getMostPopularCarTypeIn(String carRentalCompanyName, int year)  throws RemoteException, Exception;
 
     public void closeSession() throws Exception;
     /*
