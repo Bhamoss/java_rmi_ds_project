@@ -78,4 +78,14 @@ public interface ICarRentalCompany extends Remote {
 	 * @throws RemoteException
 	 */
 	public int getNumberOfReservationsForCarType(String carType) throws RemoteException;
+
+	public CarType getCheapestCarType(Date start, Date end) throws RemoteException;
+
+	public boolean operatesInRegion(String region) throws RemoteException;
+
+	public String getName() throws RemoteException;
+
+	public Set<String> getAllClientNames() throws RemoteException;
+
+	public CarType getMostPopularCarTypeIn(int year) throws RemoteException;
 }

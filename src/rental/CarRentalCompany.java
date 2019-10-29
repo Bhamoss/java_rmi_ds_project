@@ -98,6 +98,42 @@ public class CarRentalCompany implements ICarRentalCompany{
 		}
 		return availableCarTypes;
 	}
+
+	/**
+	 * returns the cheapest car type available in the given period
+	 */
+	public CarType getCheapestCarType(Date start, Date end) {
+		double cheapestPrice = Double.MAX_VALUE;
+		CarType cheapestCarType;
+		for (CarType ct : getAvailableCarTypes(start, end)) {
+			if (cheapestPrice > ct.getRentalPricePerDay()) {
+				cheapestCarType = ct;
+				cheapestPrice = ct.getRentalPricePerDay();
+			}
+		}
+		return cheapestCarType;
+
+	}
+
+	/**
+	 * Get the most popular car type of the given year
+	 */
+	public CarType getMostPopularCarTypeIn(int year) {
+
+		Map<CarType, Integer> cntCarTypes = new Map<CarType, Integer>();
+		Integer amountReservations;
+		for (Reservation r : getAllReservationsIn(year)) {
+			amountReservations = 1;
+			if (cntCarTypes.containsKey(r.getCarType())) {
+				amountReservations += CarTypes.get(r.getCarType());
+			}
+			cntCarTypes.put(r.getCarType(), amountReservations);
+		}
+
+
+		
+
+	}
 	
 	
 	/*********
@@ -124,6 +160,19 @@ public class CarRentalCompany implements ICarRentalCompany{
 			}
 		}
 		return availableCars;
+	}
+
+	/***********
+	 * CLIENTS *
+	 ***********/
+
+	public Set<String> getAllClientNames() {
+		Set<String> clients = new Set<String>();
+		for (Reservation r : getAllReservations()) {
+			clients.add(r.getCarRenter());
+		}
+
+		return clients;
 	}
 
 	
@@ -153,6 +202,24 @@ public class CarRentalCompany implements ICarRentalCompany{
 			reservation_it = car.getReservations();
 			while (reservation_it.hasNext()) {
 				reservations.add(reservation_it.next());
+			}
+		}
+		
+		return reservations;
+		
+	}
+
+	private List<Reservation> getAllReservationsIn(int year) {
+		List<Reservation> reservations = new LinkedList<>();
+		Iterator<Reservation> reservation_it;
+		Reservation tmpReservation;
+		for (Car car : getCars()) {
+			reservation_it = car.getReservations();
+			while (reservation_it.hasNext()) {
+				tmpReservation = reservation_it.next();
+				if (tmpReservation.getStartDate().getYear() == year) {
+					reservations.add(tmpReservation);
+				}
 			}
 		}
 		
