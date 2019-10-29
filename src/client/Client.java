@@ -122,8 +122,9 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
 		return getCra_stub().reserveManagerSession(name);
 	}
 
+	// public becuase i use it in the main of rentalserver
 	@Override
-	protected ManagerSession getNewManagerSession(String name, String carRentalName) throws Exception {
+	public ManagerSession getNewManagerSession(String name, String carRentalName) throws Exception {
 		String stub = reserveManagerSession(name);
 		return (ManagerSession) getRegistry().lookup(stub);
 	}

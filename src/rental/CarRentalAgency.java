@@ -18,7 +18,7 @@ public class CarRentalAgency implements ICarRentalAgency {
     public CarRentalAgency() throws RemoteException {
         this.companies = new HashMap<String, ICarRentalCompany>();
         // The registry everyone will use is on the CRA server, so this can be hardcoded
-        registry = LocateRegistry.getRegistry("127.0.0.1", 1099);
+        registry = LocateRegistry.getRegistry("127.0.0.1", RentalServer.RMI_PORT);
     }
 
     private final Registry registry;

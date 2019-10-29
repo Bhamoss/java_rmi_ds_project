@@ -11,6 +11,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import client.Client;
+
 import java.rmi.registry.*;
 
 public class RentalServer {
@@ -37,49 +39,68 @@ public class RentalServer {
 		//TODO: Then create a master session to register them on the cra
 		
 
+		/*******************************************
+		 * 	CREATING AND REGISTERING OUR CAR COMPANIES
+		 */
 
-		CrcData data  = loadData("hertz.csv");
-		CarRentalCompany server_side_crc = new CarRentalCompany(data.name, data.regions, data.cars);
+		// Reading in the data of the test companies
+		CrcData dhertz  = loadData("hertz.csv");
+		CrcData ddockx = loadData("dockx.csv");
+
+		CarRentalCompany hertz = new CarRentalCompany(dhertz.name, dhertz.regions, dhertz.cars);
+		CarRentalCompany dockx = new CarRentalCompany(ddockx.name, ddockx.regions, ddockx.cars);
 		
 		// set security managaer to null
 		System.setSecurityManager(null);
 		
-		ICarRentalCompany server_side_stub = null;
 		Registry registry;
-
-		String ip;
-		int rmiPort;
 		
 		if (localOrRemote == LOCAL) {
 			// main when executing local
-			
-			
-			
-			// make our local object available THROUGH its remote interface
-			server_side_stub = (ICarRentalCompany) UnicastRemoteObject.exportObject(server_side_crc, 0);
+
+			// important to set variables because the classes use them
+			// 0 means it will choose a random free port
+			RESERVATION_SESSIONS_PORT = 0; 
+			MANAGER_SESSIONS_PORT = 0;
+			CRCS_PORT = 0;
+			CRA_PORT = 0;
+			RMI_IP = "127.0.0.1";
 			
 			// we zoeken naar onze registry, wat op de locale pc zit in dit geval
-			registry = LocateRegistry.getRegistry("127.0.0.1", 1099);
-			
-			// we make our stub available in the registry
-			registry.rebind("crc", server_side_stub);
-			
+			// ant script creates it itself, and I don't wanna mess with ants. Sneaky buggers.
+			registry = LocateRegistry.getRegistry(RMI_IP, RMI_PORT);
 		}
 		else {
 		// main when executing remote
-			
-			
-			
-			server_side_stub = (ICarRentalCompany) UnicastRemoteObject.exportObject(server_side_crc, CRCS_PORT);
-			
-			
+		// create our own registry when executing remote
 			registry = LocateRegistry.createRegistry(RMI_PORT);
-			
-			// we make our stub available in the registry
-			registry.rebind("crc", server_side_stub);
-			
 		}
 
+		registry.rebind("hertz", (ICarRentalCompany) UnicastRemoteObject.exportObject(hertz, CRCS_PORT));
+		registry.rebind("dockx", (ICarRentalCompany) UnicastRemoteObject.exportObject(dockx, CRCS_PORT));
+
+		/*****************************************************
+		 * CREATING THE AGENCY
+		 */
+
+		CarRentalAgency agency = new CarRentalAgency();
+		// binding it as agency on the CRA port on the local registry
+		registry.rebind("agency", (ICarRentalAgency) UnicastRemoteObject.exportObject(agency, CRA_PORT));
+
+		/*****************************************************
+		 * Registring our companies on the agency (we have to to it via rmi because that would be how you normally do it)
+		 */
+
+		// no script or local or remote thing necesary because we do not want to execute the script (DONT CALL RUN)
+		// agency can also just be a cast to cicumvent using rmi
+		Client client = new Client(null, 0, (ICarRentalAgency) agency, registry);
+		//TODO: what is this carrentalname for??
+		try{
+			ManagerSession m = client.getNewManagerSession("init", "?");
+		}
+		catch (Exception e){
+			// should never happen
+		}
 
 		
 	}
