@@ -97,9 +97,13 @@ public class RentalServer {
 		//TODO: what is this carrentalname for??
 		try{
 			ManagerSession m = client.getNewManagerSession("init", "?");
+			m.registerCRC("hertz");
+			m.registerCRC("dockx");
+			m.closeSession();
 		}
 		catch (Exception e){
 			// should never happen
+			System.out.println("Problem registering companies");
 		}
 
 		

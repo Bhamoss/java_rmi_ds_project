@@ -8,14 +8,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import rental.Quote;
+import rental.RentalServer;
 import rental.Reservation;
 import rental.ReservationConstraints;
 import rental.ReservationException;
 import rental.ReservationSession;
 import rental.CarType;
 import rental.ICarRentalAgency;
-import rental.ICarRentalCompany;
 import rental.ManagerSession;
 
 public class Client extends AbstractTestManagement<ReservationSession, ManagerSession>  {
@@ -26,7 +25,6 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
 
 	private final static int LOCAL = 0;
 	private final static int REMOTE = 1;
-	public final static int RMI_PORT = 10926; // 10926-10930
 
 	/**
 	 * The `main` method is used to launch the client application and run the test
@@ -37,26 +35,21 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
 		// indicates whether the application is run on the remote setup or not.
 		int localOrRemote = (args.length == 1 && args[0].equals("REMOTE")) ? REMOTE : LOCAL;
 
+		// used for looking up cra stub in registry
 		String agencyName = "agency";
 
 		System.setSecurityManager(null);
-		//TODO: change to carRentalAgency
-		// the stub to filled with the remote object
-		ICarRentalAgency client_side_cra_stub = null;
-		Registry registry;
-
-		// split into local and remote cases
 
 		if (localOrRemote == LOCAL) {
-			registry = LocateRegistry.getRegistry("127.0.0.1", 1099);
-			client_side_cra_stub = (ICarRentalAgency) registry.lookup(agencyName);
-		} else {
-			registry = LocateRegistry.getRegistry("192.168.104.76", Client.RMI_PORT);
-			client_side_cra_stub = (ICarRentalAgency) registry.lookup(agencyName);
+			// set registry ip to local when executing local
+			RentalServer.RMI_IP = "127.0.0.1";
 		}
 
-		// An example reservation scenario on car rental company 'Hertz' would be...
-		Client client = new Client("simpleTrips", localOrRemote, client_side_cra_stub, registry);
+		Registry registry = LocateRegistry.getRegistry(RentalServer.RMI_IP, RentalServer.RMI_PORT);
+		ICarRentalAgency client_side_cra_stub = (ICarRentalAgency) registry.lookup(agencyName);
+
+		// Creating a client which will execute the trips test script
+		Client client = new Client("trips", localOrRemote, client_side_cra_stub, registry);
 
 		// starting here we can use the stub, when we have implemented everything ok
 		// I suggest adding a crc field to the client holding a stub so we can use the
