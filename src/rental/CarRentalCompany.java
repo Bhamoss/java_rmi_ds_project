@@ -122,17 +122,21 @@ public class CarRentalCompany implements ICarRentalCompany{
 
 		Map<CarType, Integer> cntCarTypes = new Map<CarType, Integer>();
 		Integer amountReservations;
+		int highestNbRes = 0;
+		CarType mostPopularCarType;
 		for (Reservation r : getAllReservationsIn(year)) {
 			amountReservations = 1;
 			if (cntCarTypes.containsKey(r.getCarType())) {
 				amountReservations += CarTypes.get(r.getCarType());
 			}
 			cntCarTypes.put(r.getCarType(), amountReservations);
+			if (amountReservations > highestNbRes) {
+				highestNbRes = amountReservations;
+				mostPopularCarType = r.getCarType();
+			}
 		}
-
-
 		
-
+		return mostPopularCarType;
 	}
 	
 	

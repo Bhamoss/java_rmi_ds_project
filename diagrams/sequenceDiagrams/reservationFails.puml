@@ -13,12 +13,14 @@ activate Client
 activate ReservationSession
 activate CarRentalAgency
 
-== confirm the quote for the car type at CRC A ==
+== confirm the quotes, quote at CRC B fails ==
+
+Client -> ReservationSession: confirmQuotes()
+ReservationSession -> CarRentalAgency: confirmQuotes()
+' TODO: verder aanvullen wat cra met confirmquotes doet
+'   zijn quotes nog valid, bij A valid, bij B fail
 
 
-== confirm the quote for the car type at CRC B, BUT error occurs ==
-
-== cancel the reservation at CRC A  ==
 
 
 @enduml
