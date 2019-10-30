@@ -13,12 +13,21 @@ activate Client
 activate ReservationSession
 activate CarRentalAgency
 
-== confirm the quotes, quote at CRC B fails ==
+== confirm the quotes ==
 
 Client -> ReservationSession: confirmQuotes()
-ReservationSession -> CarRentalAgency: confirmQuotes()
-' TODO: verder aanvullen wat cra met confirmquotes doet
-'   zijn quotes nog valid, bij A valid, bij B fail
+ReservationSession -> CarRentalAgency: confirmQuotes([quoteA, quoteB])
+
+CarRentalAgency->CarRentalCompanyA: confirmQuote(quoteA)
+CarRentalCompanyA--> CarRentalAgency: reservationA
+
+
+CarRentalAgency->CarRentalCompanyB: confirmQuote(quoteB)
+CarRentalCompanyB--> CarRentalAgency: throws ReservationException()
+
+CarRentalAgency->CarRentalCompanyA: cancelReservation(reservationA)
+
+CarRentalAgency-->Client: throws ReservationException()
 
 
 

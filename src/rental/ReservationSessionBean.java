@@ -43,7 +43,6 @@ same port number (within your port range) for multiple exported objects when usi
         addQuote(newQuote);
     }
 
-    //TODO: CONCURRENCY
     @Override
     public List<Reservation> confirmQuotes(String name) throws RemoteException, ReservationException {
         // we still have a problem if something happens to the car rental company now, but we could make the confirmQuote a synchronised method

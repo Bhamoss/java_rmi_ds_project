@@ -6,6 +6,8 @@ participant ReservationSession
 participant CarRentalAgency
 participant "crcA : CarRentalCompany" as CarRentalCompanyA
 participant "crcB : CarRentalCompany" as CarRentalCompanyB
+participant "rcA : ReservationConstraint" as RCA
+participant "rcB : ReservationConstraint" as RCB
 
 activate Client
 activate ReservationSession
@@ -13,36 +15,43 @@ activate CarRentalAgency
 
 == check availability of a car type at CRC A ==
 ' cartype at company A
-Client->ReservationSession: checkForAvailableCarTypesAtCRC(crcA, ...)
-    note left : hoe checken voor specifieke \n company A? \n extra method voorzien die ook \n met company rekening houdt? \n Hier uitgewerkt met extra method
-ReservationSession->CarRentalAgency : getAvailableCarTypesAtCRC(crcA, ...) 
+Client->ReservationSession: checkForAvailableCarTypes
+ReservationSession->CarRentalAgency : getAvailableCarTypes
 
-CarRentalAgency->CarRentalCompanyA : getAvailableCarTypes(...)
+CarRentalAgency->CarRentalCompanyA : getAvailableCarTypes
 activate CarRentalCompanyA
 CarRentalCompanyA-->ReservationSession : set of available cartypes
 deactivate CarRentalCompanyA
-ReservationSession-->Client : print set of available cartypes
-
-== create quote for a car type at CRC A ==
-Client->ReservationSession: addQuote() 
-note left  : hier idem hoe specifiek voor \n company A?
-
-== check availability of a car type at CRC B ==
-' cartype at company B
-Client->ReservationSession: checkForAvailableCarTypesAtCRC(crcB, ...)
-
-ReservationSession->CarRentalAgency : getAvailableCarTypesAtCRC(crcB, ...) 
-
-CarRentalAgency->CarRentalCompanyB : getAvailableCarTypes(...)
+CarRentalAgency->CarRentalCompanyB : getAvailableCarTypes
 activate CarRentalCompanyB
 CarRentalCompanyB-->ReservationSession : set of available cartypes
 deactivate CarRentalCompanyB
-ReservationSession-->Client : print set of available cartypes
+ReservationSession-->Client : print all sets of available cartypes
+
+== create quote for a car type at CRC A ==
+' TODO eerst ReservationConstraint aanmaken
+Client->RCA **: rcA = create a reservation constraint
+Client->ReservationSession: addQuote(rcA) 
+
+== check availability of a car type at CRC B ==
+' cartype at company B
+Client->ReservationSession: checkForAvailableCarTypes
+
+ReservationSession->CarRentalAgency : getAvailableCarTypes 
+
+CarRentalAgency->CarRentalCompanyA : getAvailableCarTypes
+activate CarRentalCompanyA
+CarRentalCompanyA-->ReservationSession : set of available cartypes
+deactivate CarRentalCompanyA
+CarRentalAgency->CarRentalCompanyB : getAvailableCarTypes
+activate CarRentalCompanyB
+CarRentalCompanyB-->ReservationSession : set of available cartypes
+deactivate CarRentalCompanyB
+ReservationSession-->Client : print all sets of available cartypes
 
 == create quote for a car type at CRC B ==
-Client->ReservationSession: addQuote()
-note left  : hier idem hoe specifiek voor \n company B?
-
+Client->RCB **: rcB = create a reservation constraint
+Client->ReservationSession: addQuote(rcB) 
 
 
 @enduml
