@@ -219,14 +219,17 @@ public class CarRentalCompany implements ICarRentalCompany{
 		Iterator<Reservation> reservation_it;
 		Reservation tmpReservation;
 		// Calendar object to change from Date to Calendar to get the year of the startdate of each reservation
-		Calendar c = Calendar.getInstance();
+		//Calendar c = Calendar.getInstance();
 		for (Car car : getCars()) {
 			reservation_it = car.getReservations();
 			while (reservation_it.hasNext()) {
 				tmpReservation = reservation_it.next();
 				// set time of the calendar to get the year of the startdate later
-				c.setTime(tmpReservation.getStartDate());
-				if (c.get(Calendar.YEAR) == year) {
+				//c.setTime(tmpReservation.getStartDate());
+				//if (c.get(Calendar.YEAR) == year) {
+				//	reservations.add(tmpReservation);
+				//}
+				if (tmpReservation.getStartDate().getYear()+1900 == year) {
 					reservations.add(tmpReservation);
 				}
 			}
