@@ -19,10 +19,9 @@
 	The client can do this for a number of quotes, which are all saved to his session. When the client wants to confirm his quotes, he notifies the car rental agency. The car rental agency tries to confirm all quotes at the relevant car rental companies. If one fails, the already confirmed reservations are cancelled and the client is notified of the failure.
 	
 	
-	\paragraph{Question 2} TODO wa mooi typen Michiel
-	Alst over de draad moet basicly, zoals een CarType bijvoorbeeld
-	When it is either a parameter or a return value of a remote method (so also when it is contained in an object which has to be serializable).
-
+	\paragraph{Question 2}
+	If an object of the class must be sent over the wire, the class must be serializable. This interface streams the object into a sequence of bytes and the receiver can restore the bytestream to the object. So each parameter or return value of remote methods must be serializable  (so also when it is contained in an object which has to be serializable). E.g. we had to make the class CarType serializable. 
+	
 	
 	\paragraph{Question 3} 
 	When a remote process wants to call a method on a local object. 
