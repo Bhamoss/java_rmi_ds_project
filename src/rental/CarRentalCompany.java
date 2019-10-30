@@ -1,6 +1,6 @@
 package rental;
 
-import java.rmi.RemoteException;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -107,6 +107,7 @@ public class CarRentalCompany implements ICarRentalCompany{
 		CarType cheapestCarType = null;
 		for (CarType ct : getAvailableCarTypes(start, end)) {
 			if (cheapestPrice >= ct.getRentalPricePerDay()) {
+				//System.out.println(ct.getRentalPricePerDay());
 				cheapestCarType = ct;
 				cheapestPrice = ct.getRentalPricePerDay();
 			}
@@ -118,12 +119,12 @@ public class CarRentalCompany implements ICarRentalCompany{
 	/**
 	 * Get the most popular car type of the given year
 	 */
-	public CarType getMostPopularCarTypeIn(int year) {
+	public CarType getMostPopularCarTypeIn(int year) throws IllegalArgumentException {
 
 		Map<String, Integer> cntCarTypes = new HashMap<String, Integer>();
 		Integer amountReservations;
 		int highestNbRes = 0;
-		String mostPopularCarType = "";
+		String mostPopularCarType = "Initial car type for getMostPopularCarTypeIn";
 		for (Reservation r : getAllReservationsIn(year)) {
 			amountReservations = 1;
 			if (cntCarTypes.containsKey(r.getCarType())) {
@@ -136,12 +137,8 @@ public class CarRentalCompany implements ICarRentalCompany{
 				mostPopularCarType = r.getCarType();
 			}
 		}
-		
-		for (CarType ct : getAllCarTypes()) {
-			if (ct.getName().equals(mostPopularCarType)) return ct;
-		}
+		return getCarType(mostPopularCarType);
 
-		return null;
 	}
 	
 	
@@ -221,11 +218,15 @@ public class CarRentalCompany implements ICarRentalCompany{
 		List<Reservation> reservations = new LinkedList<>();
 		Iterator<Reservation> reservation_it;
 		Reservation tmpReservation;
+		// Calendar object to change from Date to Calendar to get the year of the startdate of each reservation
+		Calendar c = Calendar.getInstance();
 		for (Car car : getCars()) {
 			reservation_it = car.getReservations();
 			while (reservation_it.hasNext()) {
 				tmpReservation = reservation_it.next();
-				if (tmpReservation.getStartDate().getYear() == year) {
+				// set time of the calendar to get the year of the startdate later
+				c.setTime(tmpReservation.getStartDate());
+				if (c.get(Calendar.YEAR) == year) {
 					reservations.add(tmpReservation);
 				}
 			}

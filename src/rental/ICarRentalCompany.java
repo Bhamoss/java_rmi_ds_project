@@ -90,4 +90,6 @@ public interface ICarRentalCompany extends Remote {
 	public CarType getMostPopularCarTypeIn(int year) throws RemoteException;
 
 	public void cancelReservation(Reservation res) throws RemoteException;
+	
+	public boolean isAvailable(String carTypeName, Date start, Date end) throws RemoteException;
 }

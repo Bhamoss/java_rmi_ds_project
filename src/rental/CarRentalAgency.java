@@ -114,18 +114,31 @@ same port number (within your port range) for multiple exported objects when usi
     }
     
 
-	public Quote createQuote(ReservationConstraints constraints, String client)
-			throws ReservationException, RemoteException {
-                for (ICarRentalCompany crc : companies.values()){
-                    try {
-                        return crc.createQuote(constraints, client);
-                    }
-                    catch (ReservationException e){
-                        // No company can create a quote with those constraints.
-                    }
+	public Quote createQuote(ReservationConstraints constraints, String client) throws ReservationException, RemoteException {
+        
+        for (ICarRentalCompany crc : companies.values()) {
+            try {
+                if (crc.operatesInRegion(constraints.getRegion()) && 
+                        crc.isAvailable(constraints.getCarType(), constraints.getStartDate(), constraints.getEndDate())){
+                    return crc.createQuote(constraints, client);
                 }
+            } catch (IllegalArgumentException e) {
+                // nothing happens, isAvailable throws an error if carType isn't in his cartypes collection
+            }
+        }
+        throw new ReservationException("No company can create a quote with those constraints.");
+        
+        /*for (ICarRentalCompany crc : companies.values()){
+            try {
+                return crc.createQuote(constraints, client);
+            }
+            catch (ReservationException e){
+                // No company can create a quote with those constraints.
+            }
+        }
 
-                throw new ReservationException("No company can create a quote with those constraints.");
+        throw new ReservationException("No company can create a quote with those constraints.");
+        */
     }
 
 
@@ -179,7 +192,7 @@ same port number (within your port range) for multiple exported objects when usi
         }
 
 
-        return cheapestCarType.toString();
+        return cheapestCarType.getName();
     }
 
     /*******************************************
