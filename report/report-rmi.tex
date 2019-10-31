@@ -1,7 +1,9 @@
 \documentclass{ds-report}
 
 \usepackage[T1]{fontenc}
+\usepackage{graphicx}
 \usepackage{lmodern}
+\usepackage{lscape}
 
 \assignment{Java RMI} % Set to `Java RMI`, `Java EE` or `Google App Engine`.
 \authorOne{Thomas Bamelis} % Name of first team partner.
@@ -61,4 +63,34 @@
 	
 	% You can include diagrams here.
 	
+	\begin{landscape}
+		\begin{figure}
+			\centering
+			\includegraphics[width=\paperwidth]{../diagrams/sequenceDiagrams/startSession.png}
+		\end{figure}
+	\end{landscape}
+	
+\clearpage
+	\begin{landscape}
+		\begin{figure}
+			\centering
+			\includegraphics[width=\paperwidth]{../diagrams/sequenceDiagrams/reserveCars.png}
+		\end{figure}
+	\end{landscape}
+	
+\clearpage
+	\begin{landscape}
+		\begin{figure}
+			\centering
+			\includegraphics[width=\paperwidth]{../diagrams/sequenceDiagrams/reservationSucceeds.png}
+		\end{figure}
+	\end{landscape}
+\clearpage
+	\begin{landscape}
+		\begin{figure}
+			\centering
+			\includegraphics[width=\paperwidth]{../diagrams/sequenceDiagrams/reservationFails.png}
+		\end{figure}
+	\end{landscape}
+
 \end{document}
