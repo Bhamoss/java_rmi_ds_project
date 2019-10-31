@@ -1,11 +1,11 @@
 @startuml
 title Car renter starts a new reservation session
 
-Client->CarRentalAgency: getNewReservationSession()
+Client->CarRentalAgency: getNewReservationSession
 activate Client
 activate CarRentalAgency
 
-CarRentalAgency->ReservationSession ** : createNewReservationSession()
+CarRentalAgency->ReservationSession ** : createNewReservationSession
 activate ReservationSession
 ReservationSession-->CarRentalAgency: reservation session
 CarRentalAgency-->Client: reservation session

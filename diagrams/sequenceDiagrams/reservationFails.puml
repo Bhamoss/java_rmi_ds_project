@@ -15,7 +15,7 @@ activate CarRentalAgency
 
 == confirm the quotes ==
 
-Client -> ReservationSession: confirmQuotes()
+Client -> ReservationSession: confirmQuotes
 ReservationSession -> CarRentalAgency: confirmQuotes([quoteA, quoteB])
 
 CarRentalAgency->CarRentalCompanyA: confirmQuote(quoteA)
@@ -23,11 +23,11 @@ CarRentalCompanyA--> CarRentalAgency: reservationA
 
 
 CarRentalAgency->CarRentalCompanyB: confirmQuote(quoteB)
-CarRentalCompanyB--> CarRentalAgency: throws ReservationException()
+CarRentalCompanyB--> CarRentalAgency: throws ReservationException
 
 CarRentalAgency->CarRentalCompanyA: cancelReservation(reservationA)
 
-CarRentalAgency-->Client: throws ReservationException()
+CarRentalAgency-->Client: throws ReservationException
 
 
 
