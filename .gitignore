@@ -29,3 +29,7 @@ hs_err_pid*
 *.cls
 *.synctex.gz
 *.aux
+
+
+# svg files 
+*.svg
