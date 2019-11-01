@@ -1,0 +1,176 @@
+@startuml
+title Design
+
+left to right direction
+'top to bottom direction
+
+' package clientside{
+'     class Client {
+
+'         + Client(String scriptFile, int localOrRemote, \n\t\t ICarRentalAgency icra, Registry registry) \n\t\t{Constructor, asks session}
+        
+
+'     }
+'     Client -->"1" ICarRentalAgency
+'     Client ..> ReservationSession : uses
+'     Client ..> ManagerSession : uses
+
+
+'     interface ManagerSession {
+'         + registerCRC(String name) 
+'         + unregisterCRC(String name)
+        
+'         + closeSession()
+'     }
+'     interface ReservationSession {
+        
+'         + closeSession()
+'     }
+'     interface ICarRentalAgency {
+'         + reserveReservationSession(String name) : String
+'         + reserveManagerSession(String name) : String
+        
+'     }
+' }
+
+
+package centralPoint{
+
+    ' class Registry {
+
+    ' }
+    ' Client -->"1" Registry
+    ' CarRentalAgency -->"1" Registry
+
+    interface ICarRentalCompany {
+        
+    }
+
+    ' class Session {
+    '     - cra : CarRentalAgency {final}
+    '     __
+    '     + Session(CarRentalAgency cra, String name)
+    '     # pushToRegistry() {abstract}
+        
+    '     + closeSession()
+    ' }
+    ' Session -->"1" CarRentalAgency
+
+    ' class ReservationSessionBean {
+    '     - quotes : List<Quotes>
+    '     __
+    '     + ReservationSessionBean(CarRentalAgency cra, String name)
+
+    '     # pushToRegistry() {Override}
+    ' }
+    ' ReservationSessionBean --|> Session
+    ' ReservationSessionBean ..|> ReservationSession : stub
+    ' interface ReservationSession
+
+
+
+
+
+    ' class ManagerSessionBean {
+    '     + ManagerSessionBean(CarRentalAgency cra, String name)
+
+    '     # pushToRegistry() {Override}
+
+    '     + registerCRC(String name) 
+    '     + unregisterCRC(String name)
+        
+    ' }
+    ' ManagerSessionBean --|> Session
+    ' ManagerSessionBean ..|> ManagerSession : stub
+
+
+    ' class CarRentalAgency {
+    '     - registry : Registry {final}
+    '     - companies : Map<String, ICarRentalCompany>
+    '     __
+    '     + getRegistry() : Registry
+    '     + registerCRC(String name) 
+    '     + unregisterCRC(String name)
+    '     - addCompany(String name, ICarRentalCompany company)
+    '     - removeCompany(String name)
+
+    ' }
+
+    ' CarRentalAgency ..|> ICarRentalAgency : stub
+
+    ' interface ICarRentalAgency {
+    ' }
+
+}
+
+package specific_car_rental_COMPANY_server {
+
+    
+    CarRentalAgency -->"*" ICarRentalCompany
+
+    class Car {
+        - reservation : List<Reservation>
+        __
+        + Car(int uid, CarType type)
+        
+    }
+    Car -->"*" Reservation
+    Car -->"1" CarType
+
+    class Reservation {
+        + Reservation(Quote quote, int carId)
+        ==
+        Serializable
+    }
+    Reservation --|> Quote
+
+    class Quote {
+        
+        + Quote(String carRenter, Date start, \n\t Date end, String rentalCompany, \n\t String carType, double rentalPrice)
+    
+        ==
+        Serializable
+    }
+
+
+    class CarType {
+        + CarType(String name, int nbOfSeats, float trunkSpace, double rentalPricePerDay, boolean smokingAllowed)
+        
+        ==
+        Serializable
+    }
+
+    class ReservationException {
+        + ReservationException(String string)
+        ==
+        Serializable
+    }
+
+    class CarRentalCompany {
+        - carTypes :  Map<String,CarType>
+        
+        + CarRentalCompany(String name, List<String> regions, List<Car> cars)
+    }
+    CarRentalCompany ..|> ICarRentalCompany : stub
+    CarRentalCompany -->"*" Car
+    CarRentalCompany -->"*" CarType
+
+
+
+    class ReservationConstraints {
+        + ReservationConstraints(Date start, Date end, String carType, String region)
+        ==
+        Serializable
+    }
+}
+
+
+
+interface Remote
+'ICarRentalAgency --|> Remote
+ICarRentalCompany --|> Remote
+'ManagerSession --|> Remote
+'ReservationSession --|> Remote
+
+
+@enduml
