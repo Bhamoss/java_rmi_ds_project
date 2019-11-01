@@ -17,8 +17,10 @@
 	After the text answering the question, some clarifying pictures have been included.
 
 	\paragraph{Question 1} 
-	The client looks up information he needs for making a quote. When a client make a quote with certain constraints, it asks for a quote to the car rental agency who returns the first available quote at one of the registered car companies. 
-	The client can do this for a number of quotes, which are all saved to his session. When the client wants to confirm his quotes, he notifies the car rental agency. The car rental agency tries to confirm all quotes at the relevant car rental companies. If one fails, the already confirmed reservations are cancelled and the client is notified of the failure.
+	The client looks up information he needs for making a quote. When a client makes a quote with certain constraints, it asks for a quote to the car rental agency who returns the first available quote at one of the registered car companies. 
+	The client can do this for a number of quotes, which are all saved to his session. When the client wants to confirm his quotes, he notifies the car rental agency. The car rental agency tries to confirm all quotes at the relevant car rental companies. If one fails, the already confirmed reservations are cancelled and the client is notified of the failure.\\
+	
+	On pages \pageref{startSession} - \pageref{reservationFails} are some sequence diagrams to illustrate it.
 	
 	
 	\paragraph{Question 2}
@@ -31,18 +33,15 @@
 	\paragraph{Question 4}
 	The data to be transmitted between client and server and back are the arguments and the return value of the remote call. In this case it has to be a string that contains the name of the client and the return will be an integer which contains the number of reservations of the specific renter.
 	
-	\paragraph{Question 5} TODO diagram~\\
-	Doe dat diagram gewoon design.puml classendiagram met wat minder methoden voor het overzicht.\\
-	
-	Laat alle klassen en lijntjes staan, de packages zijn het belangrijkst.
-	
-	
+	\paragraph{Question 5} 
 	%First the client to CRA communication:\\
 	The client and CRA (car rental agency) are on a different server. The client uses a CRA-stub which it looks up on a registry on the CRA-server to receive manager and reservation session-stubs. Interacting with the CRA is then done through this sessions. Every session on the client is a remote interface for a session object on the CRA-server. The session object then interacts locally with the CRA-object on the CRA-server. \\
 	
 	All interaction runs through the CRA-object and the client never directly talks to a CRC (car rental company). \\
 	
-	The CRA interacts with different CRC's which are all on their own remote servers. The CRA uses an interface to a remote CRC-object when interaction is necessary. The CRA keeps a list of interfaces of the registered CRC's. The only registry is located on the CRA and everybody interacts with it. When a CRC wants to register itself it pushes itself to this remote registry and notifies the CRA through a managersession. 
+	The CRA interacts with different CRC's which are all on their own remote servers. The CRA uses an interface to a remote CRC-object when interaction is necessary. The CRA keeps a list of interfaces of the registered CRC's. The only registry is located on the CRA and everybody interacts with it. When a CRC wants to register itself it pushes itself to this remote registry and notifies the CRA through a managersession. \\
+	
+	A diagram is added on page \pageref{designreport1} and \pageref{designreport2}.
 	
 	\paragraph{Question 6} 
 	The CRA uses a hashmap with as key the name of the company and as value an interface stub to the remote object. A CRC pushes itself on to the registry before notifying the CRA with the name by which it can lookup the interface. The CRC is thus responsible for being available and staying available on the server while it is registered in the CRA.\\
@@ -54,7 +53,7 @@
 	\paragraph{Question 7} 
 	When a session is created it is created on the CRA-server and it pushes itself to registry. The CRA-server then sends the lookup name to the client for it to be used. When the client is done with the session, he calls close session on the remote interface to the remote object. The remote object then removes itself from the registry, thus removing the last local reference to it causing de garbage collector to collect the session. \\
 	
-	We choose this approach for a couple of reasons.
+	We chose this approach for a couple of reasons.
 	The sessions are basically a facade pattern to their functionality. This is enforced by the session being a remote object.
 	We also noticed this approach in java EE.
 	It is more secure because no arbitrary calls can be made to the CRA and everything has to pass (= authenticate and authorize) through the beans.
@@ -81,6 +80,7 @@
 	
 	\begin{landscape}
 		\begin{figure}
+			\label{startSession}
 			\centering
 			\includegraphics[width=\paperwidth]{../diagrams/sequenceDiagrams/startSession.png}
 		\end{figure}
@@ -89,6 +89,7 @@
 \clearpage
 	\begin{landscape}
 		\begin{figure}
+			\label{reserveCars}
 			\centering
 			\includegraphics[width=\paperwidth]{../diagrams/sequenceDiagrams/reserveCars.png}
 		\end{figure}
@@ -97,6 +98,7 @@
 \clearpage
 	\begin{landscape}
 		\begin{figure}
+			\label{reservationSucceeds}
 			\centering
 			\includegraphics[width=\paperwidth]{../diagrams/sequenceDiagrams/reservationSucceeds.png}
 		\end{figure}
@@ -104,9 +106,26 @@
 \clearpage
 	\begin{landscape}
 		\begin{figure}
+			\label{reservationFails}
 			\centering
 			\includegraphics[width=\paperwidth]{../diagrams/sequenceDiagrams/reservationFails.png}
 		\end{figure}
 	\end{landscape}
+\clearpage
+\begin{landscape}
+	\begin{figure}
+				\label{designreport1}
+		\centering
+		\includegraphics[width=\paperwidth]{../diagrams/design_report_1.png}
+	\end{figure}
+\end{landscape}
+\clearpage
+\begin{landscape}
+	\begin{figure}
+		\label{designreport2}
+		\centering
+		\includegraphics[width=\paperwidth]{../diagrams/design_report_2.png}
+	\end{figure}
+\end{landscape}
 
 \end{document}
