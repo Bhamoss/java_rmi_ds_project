@@ -35,7 +35,11 @@ left to right direction
 
 
 package centralPoint{
-
+note as N1
+     This package is the same 
+     one as in the image of 
+     the previous page.  
+end note
     ' class Registry {
 
     ' }
@@ -106,7 +110,7 @@ package centralPoint{
 package specific_car_rental_COMPANY_server {
 
     
-    CarRentalAgency -->"*" ICarRentalCompany
+    CarRentalAgency ---->"*" ICarRentalCompany
 
     class Car {
         - reservation : List<Reservation>
@@ -151,7 +155,7 @@ package specific_car_rental_COMPANY_server {
         
         + CarRentalCompany(String name, List<String> regions, List<Car> cars)
     }
-    CarRentalCompany ..|> ICarRentalCompany : stub
+    CarRentalCompany .....|> ICarRentalCompany : stub
     CarRentalCompany -->"*" Car
     CarRentalCompany -->"*" CarType
 
