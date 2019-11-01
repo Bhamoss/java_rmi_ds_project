@@ -19,7 +19,7 @@
 	<property name="server.package" value="rental" />  <!-- Server package --> 
 	<property name="server.mainClass" value="RentalServer" />  <!-- Main class of server package (contains client `main` method) -->
 	
-	<property name="zip.filename" value="rmi2.Thomas.Bamelis" />  <!-- Name of zip file -->
+	<property name="zip.filename" value="rmi2.Michiel.Jonckheere" />  <!-- Name of zip file -->
 
 	<!--
     *************************************************************
