@@ -110,7 +110,7 @@ end note
 package specific_car_rental_COMPANY_server {
 
     
-    CarRentalAgency ---->"*" ICarRentalCompany
+    
 
     class Car {
         - reservation : List<Reservation>

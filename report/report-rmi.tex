@@ -72,7 +72,6 @@
 	More scaleable approaches could have been possible such as only blocking car companies int the list of quotes, or blocking a car rental company only when a quote is being confirmed.
 	These approaches would have been more complex to implement, increase the amount of rollbacks and also could introduce the problem of deadlocks.
 	Because of time constraints and the lack of necessity we chose our more simple but less scalable solution.
-	It is modeled after how distributed systems lock and would ask if everybody is able to commit (our ask and commit is done in one step though combined with a rollback) and only release after the process (confirmQuotes) using the resources (CRCs) terminates.
 	
 	\clearpage
 	
@@ -116,7 +115,7 @@
 	\begin{figure}
 				\label{designreport1}
 		\centering
-		\includegraphics[width=\paperwidth]{../diagrams/design_report_1.png}
+		\includegraphics[width=\paperwidth]{designCRC.png}
 	\end{figure}
 \end{landscape}
 \clearpage
@@ -124,7 +123,7 @@
 	\begin{figure}
 		\label{designreport2}
 		\centering
-		\includegraphics[width=\paperwidth]{../diagrams/design_report_2.png}
+		\includegraphics[width=\paperwidth]{Design.png}
 	\end{figure}
 \end{landscape}
 
